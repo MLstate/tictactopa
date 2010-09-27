@@ -1,0 +1,10 @@
+# sources for tictactopa
+src/grid.opa
+src/game.opa
+src/messages.opa
+src/funaction.opa
+src/client.opa
+src/client_implementation.opa
+src/server_implementation.opa
+multitub/multitub.opa
+src/main.opa

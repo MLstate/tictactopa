@@ -1,0 +1,38 @@
+A quick overview of the design of tictactopa:
+
+{1 Client/Server}
+We use the design pattern 'Multitub'. (cf folder multitub).
+Currently the implementation of this pattern is there,
+this may move to a folder in opa, regrouping several design patterns.
+
+The sources are in the folder
+src/
+
+* main.opa
+contains the urls, and the server definition.
+
+* client.opa
+containts the css, and the generation of the page (the layout of elements).
+it use in particular some funactions defined in funaction.opa
+Contains the declaration of the value Multitub_C
+
+* funaction.opa
+all the funaction inserted by the client in its page.
+
+* server.opa
+contains the definition of the value Multitub_S
+
+* messages.opa
+contains the definition of all messages of the multitub pattern.
+
+* client_implementation.opa
+The implementation (state + handler) of the client
+
+* server_implementation.opa
+The implementation (state + handler) of the server
+
+* grid.opa
+Types and implementation for manipulating the grid
+
+* game.opa
+Types and implementation for manipulating the game
