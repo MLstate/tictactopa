@@ -148,7 +148,7 @@ set_content(location : Grid.location, content : Game.content) =
   match content with
   | {free} -> clear(token)
   | _ ->
-    player = Game.player_of_content(content)
+    player = FixTheTyper.player_of_content(content)
     color = color_of_player(player)
     colorize(token, color)
 

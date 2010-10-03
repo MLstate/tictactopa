@@ -7,5 +7,5 @@ tictactopa=tictactopa.opack
 
 all: tictactopa.exe
 
-main.exe:
+tictactopa.exe:
 	$(OPA) $(OPAOPT) $(tictactopa) -o tictactopa.exe
