@@ -1,4 +1,5 @@
 # sources for tictactopa
+src/column_set.opa
 src/grid.opa
 src/game.opa
 src/messages.opa
