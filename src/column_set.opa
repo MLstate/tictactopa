@@ -4,9 +4,10 @@
 **/
 
 /**
- * Optimized module for computing sets of columns.
- * The number of columns is very small, a bitwise implementation is much more efficient than a AVL.
- * This implementation works as long as the elements are smaller than the bitwise, often 32.
+ * {0 Optimized module for computing sets of columns}
+ *
+ * If the number of elements is very small, a bitwise implementation is much more efficient than a AVL.
+ * This implementation works as long as the number of elements is smaller than the bitwise, often 32.
 **/
 
 /**
@@ -16,11 +17,12 @@
 type ColSet.elt = int
 
 /**
+ * The type of a set of elements of type [ColSet.elt]
  * @abstract
 **/
 type ColSet.t = int
 
-both ColSet = {{
+@both @public ColSet = {{
 
   empty = 0
 

@@ -2,6 +2,7 @@
 src/column_set.opa
 src/grid.opa
 src/game.opa
+src/ia.opa
 src/messages.opa
 src/funaction.opa
 src/client.opa

@@ -4,7 +4,7 @@
 **/
 
 /**
- * Manipulation of the Grid
+ * {0 Manipulation of the Grid}
 **/
 
 /**
@@ -17,8 +17,11 @@
 
 /**
  * Dimensions of the game. 7 columns, 6 lines.
- *
  * Beware, the number of lines should be a multiple of 2 (precondition of the IA)
+ * Actually, the code looks like generic, and size-extensible, but the ClientLayout,
+ * as well as the image used for drawing the table is not.
+ * But, we'd like to be able to use this server lib with some other clients.
+ * @public
 **/
 type Grid.dimensions = {
   columns : int ;
@@ -26,10 +29,11 @@ type Grid.dimensions = {
 }
 
 /**
- * A location in a Grid.t
+ * A location in a [Grid.t]
  *
- * Speeking as coordonates, we index (column X line),
- * with column and line starting from value 0
+ * Speeking as coordonates, we index [(column, line)],
+ * with column and line starting from value [0], and getting
+ * until [(Grid.dimensions.columns - 1, Grid.dimensions.lines - 1)]
  * @public
 **/
 
@@ -42,6 +46,7 @@ type Grid.location = {
 }
 
 /**
+ * The type for manipulating a grid.
  * The dimensions are cached.
  * @abstract
 **/
@@ -51,28 +56,59 @@ type Grid.t('content) = {
 }
 
 /**
+ * Utils: For loop
+**/
+@public Loop = {{
+
+  /**
+   * [for(min, max, iter)] is equivalent to the imperative form
+   * {[
+   *   for i = min to max do
+   *      iter(i);
+   *   done
+   * ]}
+   * Note that the [max] value is also iterated.
+  **/
+  for(min, max, iter) =
+    rec aux(i) =
+      if i > max then void else do iter(i) ; aux(succ(i))
+    aux(min)
+
+  /**
+   * The first tuple is the bound of [i], the snd of [j],
+   * and the function is the iteration.
+  **/
+  for2((min, max), (min2, max2), iter) =
+    for_i(i) =
+      for(min2, max2, (j -> iter(i, j)))
+    for(min, max, for_i)
+}}
+
+/**
  * {1 Manipulation of the Grid}
 **/
 
 /**
  * Important note:
  * The module for manipulating the grid is available on both side, but
- * each side has its own grid, there is no serialization of a grid.
+ * not necessary used.
+ * In case we may want to have a side on each side, there would be no
+ * serialization of the grid during the execution. (Multitub design)
  *
  * We could imagine serveral kind of clients, ligth or not.
  * E.g. a light client would not have the grid (only the server will),
  * where a heavyer client could before perform some checks locally before
- * sending action to the server which has anyway the grid for security reason.
+ * sending action to the server which has anyway the grid for performance
+ * and/or security reason.
 **/
-
-both Grid = {{
+@both @public Grid = {{
 
   /**
-   * Creating a new grid.
+   * Creating a new grid form [dimensions] and a default [content].
   **/
-  make(dimensions, content) =
+  make(dimensions : Grid.dimensions, content) =
     c = dimensions.columns
-    l = dimensions.line
+    l = dimensions.lines
     line() = LowLevelArray.create(l, content)
     t = LowLevelArray.create(c, line())
     rec aux(i) =
@@ -89,38 +125,34 @@ both Grid = {{
   dimensions(grid : Grid.t) = grid.dimensions
 
   /**
-   * @private
+   * Get the content of a location in a grid.
+   * Interface usefull for loops.
+   * @errors(Unspecified in case of index out of bounds)
   **/
-  private_get(grid : Grid.t, column : int, line : int) =
+  getij(grid : Grid.t, column : Grid.column, line : Grid.line) =
     t = grid.t
     t_line = LowLevelArray.get(t, column)
     content = LowLevelArray.get(t_line, line)
     content
 
   /**
-   * Get the content of a location.
+   * Get the content of a location in a grid.
+   * @errors(Unspecified in case of index out of bounds)
   **/
   get(grid : Grid.t, location : Grid.location) =
-    private_get(grid, location.column, location.line)
+    getij(grid, location.column, location.line)
 
   /**
    * Set the content of a location.
    * The interface in functionnal because we may switch the current implementation
-   * for a persistent implementation.
+   * for a persistent implementation. But currently, the implementation in imperative.
+   * @errors(Unspecified in case of index out of bounds)
   **/
   set(grid : Grid.t('content), location : Grid.location, content : 'content) =
     t = grid.t
     line = LowLevelArray.get(t, location.column)
     do LowLevelArray.set(line, location.line, content)
     grid
-
-  /**
-   * Utils: For loop
-  **/
-  for(min, max, iter) =
-    rec aux(i) =
-      if i > max then void else do iter(i) ; aux(succ(i))
-    aux(min)
 
   /**
    * Clear the grid, which means fill with a given content.
@@ -133,15 +165,15 @@ both Grid = {{
     iter(i) =
       line = LowLevelArray.get(t, i)
       iter(j) = LowLevelArray.set(line, j, content)
-      do for(0, pred(lines), iter)
+      do Loop.for(0, pred(lines), iter)
       void
-    do for(0, pred(columns), iter)
+    do Loop.for(0, pred(columns), iter)
     grid
 
   /**
-   * Fold. Column by column, and inside, line by line.
+   * Fold. Column by column first, and inside, line by line.
   **/
-  fold(fold, grid, acc) =
+  fold(fold, grid : Grid.t, acc) =
     t = grid.t
     fold_line(line, acc) = LowLevelArray.fold(fold, line, acc)
     LowLevelArray.fold(fold_line, t, acc)
@@ -149,6 +181,7 @@ both Grid = {{
   /**
    * Fold neibourgh. Column by column, and inside, line by line.
    * The location itself is not folded.
+   * The dist if the maximal distance separating 2 neibourghs.
   **/
   fold_neibourgh(fold, grid : Grid.t, location : Grid.location, dist : int, acc) =
     dimensions = grid.dimensions
@@ -168,7 +201,7 @@ both Grid = {{
         else
           if ((i == column) && (j == line)) then aux(i, succ(j), acc)
           else
-            acc = fold(private_get(grid, i, j), acc)
+            acc = fold(getij(grid, i, j), acc)
             aux(i, succ(j), acc)
     aux(min_c, min_l, acc)
 }}

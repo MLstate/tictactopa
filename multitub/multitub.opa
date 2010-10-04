@@ -183,8 +183,22 @@ type Multitub.S.interface('state) = {
    * Create the internal state of the server.
    * The initializer is not functionnal because the state of the server
    * may be imperative.
-   */
+  **/
   init : void -> 'state
+
+  /**
+   * Some initialization may be necessary once the server knows the client.
+   * This function is not in the [Multitub.C.interface] because of the asymetrie
+   * of the initialization protocol. When we create the client session, the server session
+   * is known.
+   *
+   * This is an extra initialization for the server. In case the server does not need it,
+   * simply does not change the state, as in :
+   * {[
+   *    on_connection(_, state) = state
+   * ]}
+  **/
+  on_connection : Multitub.C.channel, 'state -> 'state
 
   /**
    * Handle messages received from the client handler, or from some funaction in the page.
@@ -236,13 +250,12 @@ type Multitub.private.C.state('state) = {
   state : 'state
 }
 
-Multitub = {{
+@public Multitub = {{
 
 /**
  * Maping instructions for sub-state manipulation.
- * @private
  */
-session_map_instruction(map, i) =
+@private session_map_instruction(map, i) =
   match i : Session.instruction with
   | {set = state} -> {set = map(state)}
   | {unchanged}
@@ -252,17 +265,11 @@ session_map_instruction(map, i) =
  * {2 Client}
  */
 
-/**
- * @private
- */
-client c_init(s_channel) =
+@client @private c_init(s_channel) =
   state = Multitub_C.init()
   ~{ s_channel state } : Multitub.private.C.state
 
-/**
- * @private
- */
-client c_on_message(state, message) =
+@client @private c_on_message(state, message) =
   map(internal_state) = { state with state = internal_state }
   session_map_instruction(map, Multitub_C.on_message(state.s_channel, state.state, message))
 
@@ -270,20 +277,15 @@ client c_on_message(state, message) =
  * {2 Server}
  */
 
-/**
- * @private
- */
-server s_init() =
+@server @private s_init() =
   state = Multitub_S.init()
   { c_channel = {none} ; ~state} : Multitub.private.S.state
 
-/**
- * @private
- */
-server s_on_message(state, message) =
+@server @private s_on_message(state, message) =
   match message : Multitub.private.S.message with
   | { set_c_channel = c_channel } ->
-    { set = { state with c_channel = { some = c_channel } } }
+    state = Multitub_S.on_connection(c_channel, state.state)
+    { set = { ~state ; c_channel = { some = c_channel } } }
   | { ~message } -> (
     match state.c_channel with
     | {none} -> error("Internal error, the client has not been set yet")
@@ -296,23 +298,17 @@ server s_on_message(state, message) =
  * {2 Web}
  */
 
-/**
- * @private
- */
-client c_onload(s_channel, _) =
+@client @private c_onload(s_channel, _) =
   c_channel = Session.make(c_init(s_channel), c_on_message)
   do send(s_channel, {set_c_channel = c_channel})
   do exec_actions( [ #multitub <- Multitub_C.page(s_channel, c_channel) ] )
   void
 
-/**
- * @private
- */
-server multitub_page() =
+@server @private multitub_page() =
   s_channel = Session.make(s_init(), s_on_message)
   <>
     <div id="multitub" onload={c_onload(s_channel, _)}>
-      "initializing..."
+      "multitub initialization..."
     </div>
   </>
 
@@ -321,7 +317,7 @@ server multitub_page() =
  * The server should use this function for sending
  * message to the client, and not directly the 'send' function.
  */
-send_client(channel : Multitub.C.channel, message : Multitub.C.message) =
+@both send_client(channel : Multitub.C.channel, message : Multitub.C.message) =
   send(channel, message)
 
 /**
@@ -329,7 +325,7 @@ send_client(channel : Multitub.C.channel, message : Multitub.C.message) =
  * The client should use this function for sending
  * message to the server, and not directly the 'send' function.
  */
-send_server(channel : Multitub.S.channel, message : Multitub.S.message) =
+@both send_server(channel : Multitub.S.channel, message : Multitub.S.message) =
   send(channel, { ~message })
 
 /**
@@ -338,12 +334,12 @@ send_server(channel : Multitub.S.channel, message : Multitub.S.message) =
  *    server = multitub("Name")
  * ]}
  */
-server one_page_server(title) = @toplevel.one_page_server(title, multitub_page)
+@server one_page_server(title) = @toplevel.one_page_server(title, multitub_page)
 
 /**
  * If you need to integrate the multitub in some url of a [simple_server]
  */
-server resource(title) =
+@server resource(title) =
   body = multitub_page()
   Resource.page(title, body)
 
