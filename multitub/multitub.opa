@@ -1,4 +1,4 @@
-/**
+/*
  * OPA design pattern collection. (c) MLstate - 2010
  *
  * The Mutlitub pattern, for OPA-S3.
@@ -19,7 +19,7 @@
  *
  * The client has 2 different kind of messages, one from the server (contract) and one
  * from some funactions which the client has generated itself.
- */
+**/
 
 /**
  * {1 Utilisation}
@@ -34,18 +34,18 @@
  * modules are declared. Since modules in opa are recursives, and a Reorder pass assure
  * that the dependencies are satisfaid, there are no problems.
  * The user of this file should define these types and modules in a separated file.
- */
+**/
 
 /**
  * {1 Messages}
  *
  * In this design, all events of the application are documented, and represented by
  * some messages for the sessions.
- */
+**/
 
 /**
  * {2 Client}
- */
+**/
 
 /**
  * The type [Multitub.C.message] should be defined in one of the file of the application.
@@ -53,7 +53,7 @@
  * client, and the messages sent by some funactions (client private messages)
  * The handler of the client will perform some actions when it receives
  * the messages, e.g. DOM modification / state modification, etc.
- */
+**/
 // type Multitub.C.message = ??
 
 /**
@@ -62,12 +62,12 @@
  * of this type.
  * (will be replaced any time by a better typing feature)
  * @abstract
- */
+**/
 type Multitub.C.channel = channel(Multitub.C.message)
 
 /**
  * {2 Server}
- */
+**/
 
 /**
  * The type [Multitub.S.message] should be defined in one of the file of the application.
@@ -75,7 +75,7 @@ type Multitub.C.channel = channel(Multitub.C.message)
  * server. The handler of the server will perform some actions when it receives
  * the messages, e.g. state modification, some computation, and probably send back
  * some messages to the client, asynchronously.
- */
+**/
 // type Multitub.S.message = ???
 
 /**
@@ -87,28 +87,28 @@ type Multitub.C.channel = channel(Multitub.C.message)
  * of this file, and the user of the design does not manipulate it at all.
  * (will be replaced any time by a better typing feature)
  * @private
- */
+**/
 type Multitub.private.S.message = { message : Multitub.S.message } / { set_c_channel : Multitub.C.channel }
 
 /**
  * @abtract
- */
+**/
 type Multitub.S.channel = channel(Multitub.private.S.message)
 
 /**
  * {1 Handler, components}
- */
+**/
 
 /**
  * Once this contract is established (the types of messages), handler on the 2 sides
  * are independant, and can evoluate, without perturbing the web part of the application.
  * We could e.g. imagine have several implementations of (init, handler)
  * with the same type of messages, or parallelizing the work with different team, etc.
- */
+**/
 
 /**
  * {2 Client}
- */
+**/
 
 /**
  * The interface that a client for this application should implement.
@@ -117,10 +117,10 @@ type Multitub.S.channel = channel(Multitub.private.S.message)
  *
  * {[
  *    @client Multitub_C : Multitub.C.interface = {{
-        ...
-      }}
+ *      ...
+ *    }}
  * ]}
- */
+**/
 // FIXME: should be a module interface
 type Multitub.C.interface('state) = {
 
@@ -129,14 +129,14 @@ type Multitub.C.interface('state) = {
    * The initializer is not functionnal because the state of the client
    * may be imperative, there are no reason to forbid it, e.g. wrt performances
    * depending on the kind of the application.
-   */
+  **/
   init : void -> 'state
 
   /**
    * Handle messages received from the server, or from some funaction in the page.
    * Possibly, send back some messages to the server asynchronously.
    * In that case, you must use the function [Multitub.send_server] on the server channel.
-   */
+  **/
   on_message : Multitub.S.channel, 'state, Multitub.C.message -> Session.instruction('state)
 
   /**
@@ -157,13 +157,13 @@ type Multitub.C.interface('state) = {
    *
    * <!> The DOM element id 'multitub' is reserved by the application, and should
    * not be used.
-   */
+  **/
   page : Multitub.S.channel, Multitub.C.channel -> xhtml
 }
 
 /**
  * {2 Server}
- */
+**/
 
 /**
  * The interface that a server for this application should implement.
@@ -172,10 +172,10 @@ type Multitub.C.interface('state) = {
  *
  * {[
  *    @server Multitub_S : Multitub.S.interface = {{
-        ...
-      }}
+ *      ...
+ *    }}
  * ]}
- */
+**/
 // FIXME: should be a module interface
 type Multitub.S.interface('state) = {
 
@@ -204,18 +204,18 @@ type Multitub.S.interface('state) = {
    * Handle messages received from the client handler, or from some funaction in the page.
    * Possibly, send back some messages to the client, in that case, you must
    * use the function [Multitub.send_client] on the client channel.
-   */
+  **/
   on_message : Multitub.C.channel, 'state, Multitub.S.message -> Session.instruction('state)
 }
 
 
 /**
  * {1 Implementation of the application}
- */
+**/
 
 /**
  * {2 Client/Server}
- */
+**/
 
 /**
  * As explained in the upper note, we cannot use fonctor on C and S.
@@ -226,16 +226,16 @@ type Multitub.S.interface('state) = {
  *   @server Multitub_S : Multitub.S.interface = ...
  *   @client Multitub_C : Multitub.C.interface = ...
  * ]}
- */
+**/
 
 /**
  * {1 Implementation of Multitub}
- */
+**/
 
 /**
  * The state of the server session.
  * @private
- */
+**/
 type Multitub.private.S.state('state) = {
   c_channel : option(Multitub.C.channel)
   state : 'state
@@ -244,7 +244,7 @@ type Multitub.private.S.state('state) = {
 /**
  * The state of the client session.
  * @private
- */
+**/
 type Multitub.private.C.state('state) = {
   s_channel : Multitub.S.channel
   state : 'state
@@ -254,7 +254,7 @@ type Multitub.private.C.state('state) = {
 
 /**
  * Maping instructions for sub-state manipulation.
- */
+**/
 @private session_map_instruction(map, i) =
   match i : Session.instruction with
   | {set = state} -> {set = map(state)}
@@ -263,7 +263,7 @@ type Multitub.private.C.state('state) = {
 
 /**
  * {2 Client}
- */
+**/
 
 @client @private c_init(s_channel) =
   state = Multitub_C.init()
@@ -275,7 +275,7 @@ type Multitub.private.C.state('state) = {
 
 /**
  * {2 Server}
- */
+**/
 
 @server @private s_init() =
   state = Multitub_S.init()
@@ -296,7 +296,7 @@ type Multitub.private.C.state('state) = {
 
 /**
  * {2 Web}
- */
+**/
 
 @client @private c_onload(s_channel, _) =
   c_channel = Session.make(c_init(s_channel), c_on_message)
@@ -316,7 +316,7 @@ type Multitub.private.C.state('state) = {
  * The type Multitub.C.message should be 'abstract' (not possible with S3).
  * The server should use this function for sending
  * message to the client, and not directly the 'send' function.
- */
+**/
 @both send_client(channel : Multitub.C.channel, message : Multitub.C.message) =
   send(channel, message)
 
@@ -324,7 +324,7 @@ type Multitub.private.C.state('state) = {
  * The type Multitub.S.message should be 'abstract' (not possible with S3).
  * The client should use this function for sending
  * message to the server, and not directly the 'send' function.
- */
+**/
 @both send_server(channel : Multitub.S.channel, message : Multitub.S.message) =
   send(channel, { ~message })
 
@@ -333,12 +333,12 @@ type Multitub.private.C.state('state) = {
  * {[
  *    server = multitub("Name")
  * ]}
- */
+**/
 @server one_page_server(title) = @toplevel.one_page_server(title, multitub_page)
 
 /**
  * If you need to integrate the multitub in some url of a [simple_server]
- */
+**/
 @server resource(title) =
   body = multitub_page()
   Resource.page(title, body)
