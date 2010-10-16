@@ -9,6 +9,9 @@ tictactopa=tictactopa.opack
 
 all: tictactopa.exe
 
+loop:
+	while [ 1 ] ; do make -B all || true ; sleep 5 ; done
+
 tictactopa.exe:
 	$(OPA) $(OPAOPT) $(tictactopa) -o tictactopa.exe
 
