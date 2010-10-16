@@ -1,11 +1,6 @@
 /*
  * Tictactopa. (c) MLstate - 2010
  * @author Mathieu Barbin
-**/
-
-/*
- * Tictactopa. (c) MLstate - 2010
- * @author Mathieu Barbin
  */
 
 /**

@@ -82,6 +82,7 @@ type Game.grid = Grid.t(Game.content)
 type Game.state = {
   goal : Game.goal ;
   ia : IA.parameters ;
+  ia_state : IA.state ;
   status : Game.status ;
   grid : Game.grid ;
 }
@@ -383,14 +384,15 @@ type Game.state = {
 @both @public Game = {{
 
   make() =
-    ia = IA.Parameters.default
     goal = GameParameters.goal
     // Convention: The Yellow are always the first to play
     status = { in_progress = GameParameters.first_player } : Game.status
     dimensions = GameParameters.dimensions
     content = { free } : Game.content
     grid = Grid.make(dimensions, content)
-    ~{ goal ia status grid }
+    ia = IA.Parameters.default
+    ia_state = IA.allocate(grid)
+    ~{ goal ia ia_state status grid }
 
   /**
    * Reseting only the grid and the status.

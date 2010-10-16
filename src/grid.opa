@@ -148,11 +148,14 @@ type Grid.t('content) = {
    * for a persistent implementation. But currently, the implementation in imperative.
    * @errors(Unspecified in case of index out of bounds)
   **/
-  set(grid : Grid.t('content), location : Grid.location, content : 'content) =
+  setij(grid : Grid.t('content), column : Grid.column, line : Grid.line, content : 'content) =
     t = grid.t
-    line = LowLevelArray.get(t, location.column)
-    do LowLevelArray.set(line, location.line, content)
+    t_line = LowLevelArray.get(t, column)
+    do LowLevelArray.set(t_line, line, content)
     grid
+
+  set(grid : Grid.t('content), location : Grid.location, content : 'content) =
+    setij(grid, location.column, location.line, content)
 
   /**
    * Clear the grid, which means fill with a given content.
@@ -204,4 +207,15 @@ type Grid.t('content) = {
             acc = fold(getij(grid, i, j), acc)
             aux(i, succ(j), acc)
     aux(min_c, min_l, acc)
+
+
+   /**
+    *
+   **/
+   iterij(grid : Grid.t, iter) =
+     dimensions = grid.dimensions
+     columns = dimensions.columns
+     lines = dimensions.lines
+     Loop.for2((0, pred(columns)), (0, pred(lines)), iter)
+
 }}
