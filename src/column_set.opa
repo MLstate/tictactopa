@@ -64,14 +64,22 @@ type ColSet.t = int
     aux(_, acc) = succ(acc)
     fold(aux, set, 0)
 
+  to_string(set) =
+    cons(hd, tl) = List.cons(string_of_int(hd), tl)
+    list = fold(cons, set, List.empty)
+    List.to_string(List.rev(list))
+
   /**
    * Folding intersection, but ignoring sets which
    * make the intersection become empty.
   **/
+
+  specialize(setA, setB) =
+    inter = inter(setA, setB)
+    if is_empty(inter) then setA else setB
+
   priority_inter(list : list(ColSet.t), set : ColSet.t) =
-    fold_inter(set, acc) =
-      inter = inter(acc,set)
-      if is_empty(inter) then acc else inter
+    fold_inter(set, acc) = specialize(acc, set)
     match list with
     | { nil } -> empty
     | ~{ hd tl } ->

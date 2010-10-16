@@ -45,6 +45,11 @@ IA_Winning = {{
 
   bottom = { R = false ; Y = false }
 
+  read(winning : IA.winning_location, player : Game.player) =
+    match player with
+    | {R} -> winning.R
+    | {Y} -> winning.Y
+
   /**
    * Just so that compute_winning_grid can have an imperative
    * implementation for not reallocating a fresh winning_grid
@@ -52,7 +57,7 @@ IA_Winning = {{
   make(dimensions : Grid.dimensions) : IA.winning_grid =
     Grid.make(dimensions, bottom)
 
-  reset(win : IA.winning_grid) =
+  @private reset(win : IA.winning_grid) =
     Grid.clear(win, bottom)
 
   /**
@@ -87,8 +92,48 @@ IA_Winning = {{
     do Grid.iterij(grid, iter)
     win
 
-}}
+  /**
+   * Once the winning grid is computed, we can have a few interresting informations.
+  **/
 
+  /**
+   * Return the set of action leading to the subite victory for the player [p]
+   * given a start set of possible actions.
+  **/
+  victory(grid : Game.grid, win : IA.winning_grid, actions : ColSet.t, p : Game.player) =
+    fold(column, acc) =
+      match GameUtils.free_line(grid, column) with
+      | { some = line } ->
+        w = Grid.getij(win, column, line)
+        if read(w, p)
+        then ColSet.add(column, acc)
+        else acc
+      | _ -> acc
+    actions = ColSet.fold(fold, actions, ColSet.empty)
+    actions
+
+  /**
+   * In a set of actions, remove the one making so that the player [p] can play up and win.
+   * The only possibility for this situation, is so that the location just up the action was
+   * already winning
+  **/
+  anti_victory(grid : Game.grid, win : IA.winning_grid, actions : ColSet.t, p : Game.player) =
+    dimensions = Grid.dimensions(grid)
+    lines = dimensions.lines
+    fold(column, acc) =
+      match GameUtils.free_line(grid, column) with
+      | { some = line } ->
+        succ_line = succ(line)
+        if succ_line >= lines then acc
+        else
+          w = Grid.getij(win, column, succ_line)
+          if read(w, p)
+          then acc
+          else ColSet.add(column, acc)
+      | _ -> acc
+    actions = ColSet.fold(fold, actions, ColSet.empty)
+    actions
+}}
 
 /**
  * {1 Main IA module}
@@ -155,25 +200,19 @@ IA_Winning = {{
       | { in_progress = player } -> player
       | _ -> @fail("IA.compute")
     grid = game.grid
-    actions = GameRules.actions(grid)
 
-    if level == 0
-    then
-      // Level 0: play randomly
-      action = ColSet.random(actions)
-      action =
-        match action with
-        | {none} -> @fail("IA.compute: internal error")
-        | {some = action} -> action
-      action : Game.action
-    else
-      win = IA_Winning.compute(grid, state.winning_grid)
-      iterij(i, j) =
-        w = Grid.getij(win, i, j)
-        do if w.R then jlog("R: {i},{j} => win")
-        do if w.Y then jlog("Y: {i},{j} => win")
-        void
-      do Grid.iterij(win, iterij)
+    log(name, set) =
+      repr = ColSet.to_string(set)
+      jlog("{name} : {repr}")
+
+    choices = GameRules.actions(grid)
+
+    do jlog("========IA========")
+    do log("choices", choices)
+
+    // At the end, once the choices have beenn made,
+    // select one of the remaining choices.
+    choose(actions) =
       action = ColSet.random(actions)
       action =
         match action with
@@ -181,5 +220,38 @@ IA_Winning = {{
         | {some = action} -> action
       action : Game.action
 
+    /*
+     * Note: we keep this indentation for better readability.
+     */
+
+    // Level 0: play randomly
+    if level == 0 then choose(choices) else
+
+    other_player = GameContent.neg_player(player)
+    win = IA_Winning.compute(grid, state.winning_grid)
+
+    // Victory
+    victory = IA_Winning.victory(grid, win, choices, player)
+    do log("victory", victory)
+    choices = ColSet.specialize(choices, victory)
+    do log("choices", choices)
+
+    // Blocking victory
+    block_victory = IA_Winning.victory(grid, win, choices, other_player)
+    do log("block_victory", block_victory)
+    choices = ColSet.specialize(choices, block_victory)
+    do log("choices", choices)
+
+    // Anti-victory
+    anti_victory = IA_Winning.anti_victory(grid, win, choices, other_player)
+    do log("anti_victory", anti_victory)
+    choices = ColSet.specialize(choices, anti_victory)
+    do log("choices", choices)
+
+    // This is enough for level 1
+    if level <= 1 then choose(choices) else
+
+
+    choose(choices)
 
 }}
