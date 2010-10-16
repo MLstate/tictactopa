@@ -52,6 +52,7 @@ type Multitub.message.date = int
  *
  * All the messages the server must handle.
  * They come all from a client.
+ * This type of messages is handled by the funtion [on_message] of the server implementation.
 **/
 
 type Multitub.S.message =
@@ -62,11 +63,18 @@ type Multitub.S.message =
    { restart }
 
    /**
+    * The client wants to change the parameters of the IA.
+    * The type IA.parameters is defined on both side.
+   **/
+ / { ia_parameters : IA.parameters }
+
+   /**
     * The client has choosen where to play, and it notifies the server.
     * There will be 2 answers, the confirmation to add the token of the client,
     * and later the response of the server.
    **/
  / { action : Game.action ; date : Multitub.message.date }
+
 
 /**
  * {1 Client}

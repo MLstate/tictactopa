@@ -34,7 +34,24 @@ type IA.parameters = {level : int}
 
   Parameters = {{
 
+    max_level = 4
+
     default = { level = 0 } : IA.parameters
+
+    /**
+     * Return a level in the bounds of the ia.
+    **/
+    check(level : IA.parameters) =
+      i = level.level
+      if i < 0
+      then
+        { level = 0 }
+      else
+        if i > max_level
+        then
+          { level = max_level }
+        else
+          level
 
   }}
 

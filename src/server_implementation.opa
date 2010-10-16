@@ -133,6 +133,14 @@ type S.implementation.state = {
     | { restart } ->
       state = ServerUtils.new_game(c_channel, state)
       { set = state }
+
+    | { ia_parameters = ia } ->
+      ia = IA.Parameters.check(ia)
+      do jlog("server: setting level: {ia.level}")
+      game = { state.game with ~ia }
+      state = { state with ~game }
+      { set = state }
+
     | ~{ action date } ->
       // Validate the date
       if date != state.date

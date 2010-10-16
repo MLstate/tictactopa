@@ -19,8 +19,10 @@ restart(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel, _) =
   do Multitub.send_client(c_channel, {funaction = {restart}})
   void
 
-level(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel, level, _) =
-  do jlog("todo:level")
+level(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel, dom_level : jquery, _) =
+  value = jQuery.getVal(dom_level)
+  level = int_of_string_unsafe(value)
+  do Multitub.send_server(s_channel, {ia_parameters = { ~level }})
   void
 
 }}

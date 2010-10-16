@@ -307,9 +307,12 @@ xhtml(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
           Your token color for this game : <div id="{player_id}" class={["yourtoken"]} />
         </div>
         <div id="{status_id}"></div>
-        <select id="{level_id}" onchange={Funaction.level(s_channel, c_channel, level_id, _)}>
+        <select id="{level_id}" onchange={Funaction.level(s_channel, c_channel, unarySharp(level_id), _)}>
           <option value=0 selected>level:random</option>
-          <option value=1>level:todo</option>
+          <option value=1>level:dummy</option>
+          <option value=2>level:novice</option>
+          <option value=3>level:advanced</option>
+          <option value=4>level:expert</option>
         </select>
         <div>
           <a id="{restart_id}" class="button" href="#" onclick={Funaction.restart(s_channel, c_channel,_)}>Start a new game</a>
