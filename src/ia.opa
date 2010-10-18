@@ -72,8 +72,9 @@ IA_Winning = {{
     res =
       match GameUtils.status(grid) with
       | { some = p } ->
-        // FIXME: The typer is dummy, p :< Game.content does not work at all
+        // FIXME: The typer is dummy, p <: Game.content does not work at all
         p = Magic.id(p) : Game.content
+        // p = p <: Game.content
         GameContent.equal(player, p)
       | _ -> false
     do Grid.setij(grid, i, j, {free})
