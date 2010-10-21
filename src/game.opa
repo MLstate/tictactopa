@@ -421,8 +421,12 @@ type Game.state = {
       match line with
       | {some = line} ->
         location = ~{ column line }
-        content = Magic.id(player)
-          // FIXME: @opensums(player) : Game.content
+        /* Coercion of {b player} into {b Game.player} before opening
+           the type to {b Game.content} is a handy workaround against the
+           current @opensums bug in the typechecker
+           (see test 02-subsums.opa).
+           However, FIXME: @opensums(player) : Game.content */
+        content = (player : Game.player) <: Game.content
         grid = Grid.set(grid, location, content)
         status = GameRules.status(grid)
         { game with ~grid ~status }
