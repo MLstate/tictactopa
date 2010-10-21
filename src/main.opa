@@ -4,15 +4,20 @@
 **/
 
 /**
- * Urls and server definition.
+ * {1 Urls and server definition.}
 **/
 
-png(png) = Resource.image({png=png})
+/**
+ * By default, all URLs are dispatched to the multitub.
+ */
+urls      = parser .* -> _ -> Multitub.resource("tictactopa")
 
-urls = parser
-  | "/resources/grid.png"   -> png(@static_source_content("./resources/grid.png"))
-  | "/resources/red.png"    -> png(@static_source_content("./resources/red.png"))
-  | "/resources/yellow.png" -> png(@static_source_content("./resources/yellow.png"))
-  | (.*) -> Multitub.resource("tictactopa")
+/**
+ * Use the resources in directory resources/
+ */
+resources = @static_include_directory("resources")
 
-server = simple_server(urls)
+/**
+ * Start the server, using both [urls] and [resources]
+ */
+server    = Server.make(Resource.add_auto_server(resources, urls))

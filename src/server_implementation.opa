@@ -41,10 +41,10 @@ type S.implementation.state = {
    * The [GameParameters.first_player] is always the first to start,
    * and we choose randomly before each game, who is this player.
   **/
-  choose_player() =
+  choose_player(): Game.player =
     n = Random.int(2)
     player = if n == 0 then {Y} else {R}
-    player : Game.player
+    player
 
   /**
    * Generating a date for coherence of messages, because of the incertitude
@@ -52,9 +52,9 @@ type S.implementation.state = {
    * This is not about security, but just in case a mad monkey click
    * everywhere in the grid.
   **/
-  generate_date() =
+  generate_date(): Multitub.message.date =
     date = Random.int(max_int)
-    date : Multitub.message.date
+    date
 
   /**
    * Start a new game.
@@ -64,7 +64,7 @@ type S.implementation.state = {
    * using the function [Game.reset] which can preserve some informations.
    * We may add for example a victory counter.
   **/
-  new_game(c_channel : Multitub.C.channel, state : S.implementation.state) =
+  new_game(c_channel: Multitub.C.channel, state: S.implementation.state):S.implementation.state  =
     server_player = choose_player()
     client_player = GameContent.neg_player(server_player)
     server_starts =
