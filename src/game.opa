@@ -3,6 +3,9 @@
  * @author Mathieu Barbin
 **/
 
+package tictactopa.game
+import tictactopa.{colset,grid}
+
 /**
  * {0 Manipulation of the Game}
 **/

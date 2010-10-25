@@ -3,6 +3,9 @@
  * @author Mathieu Barbin
 **/
 
+package tictactopa.grid
+// import stdlib.llarray
+
 /**
  * {0 Manipulation of the Grid}
 **/

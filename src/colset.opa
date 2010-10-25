@@ -3,6 +3,8 @@
  * @author Mathieu Barbin
 **/
 
+package tictactopa.colset
+
 /**
  * {0 Optimized module for computing sets of columns}
  *

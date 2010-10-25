@@ -3,6 +3,9 @@
  * @author Mathieu Barbin
  */
 
+package tictactopa.ia
+import tictactopa.{colset,grid,game}
+
 /**
  * Implementation of IA.
 **/
