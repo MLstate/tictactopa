@@ -128,7 +128,7 @@ token(location : Grid.location) =
  * The token will no longer be visible.
 **/
 clear(token : ClientToken.t) =
-  do jQuery.removeClass("red yellow", token)
+  _ = jQuery.removeClass("red yellow", token)
   void
 
 /**
@@ -137,7 +137,7 @@ clear(token : ClientToken.t) =
 colorize(token : ClientToken.t, player : Game.player) =
   color = color_of_player(player)
   do clear(token)
-  do jQuery.addClass(color, token)
+  _ = jQuery.addClass(color, token)
   void
 
 /**

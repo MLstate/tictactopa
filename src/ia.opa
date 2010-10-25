@@ -68,27 +68,26 @@ IA_Winning = {{
 
   // utils. assert: the location is free
   @private winning_ij(grid, i, j, player : Game.content) =
-    do Grid.setij(grid, i, j, player)
+    grid = Grid.setij(grid, i, j, player)
     res =
       match GameUtils.status(grid) with
       | { some = p } ->
-        // FIXME: The typer is dummy, p <: Game.content does not work at all
-        p = Magic.id(p) : Game.content
-        // p = p <: Game.content
+        // FIXME: The typer does not work with p <: Game.content, without the coercion
+        p = ( p : Game.player ) <: Game.content
         GameContent.equal(player, p)
       | _ -> false
-    do Grid.setij(grid, i, j, {free})
+    grid = Grid.setij(grid, i, j, {free})
     res
 
   compute(grid : Game.grid, win : IA.winning_grid) : IA.winning_grid =
-    do reset(win)
+    win = reset(win)
     iter(i, j) =
       if Grid.getij(grid, i, j) == { free }
       then
         R_winning = winning_ij(grid, i, j, {R})
         Y_winning = winning_ij(grid, i, j, {Y})
         winning = { R = R_winning ; Y = Y_winning }
-        do Grid.setij(win, i, j, winning)
+        _ = Grid.setij(win, i, j, winning)
         void
     do Grid.iterij(grid, iter)
     win

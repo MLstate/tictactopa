@@ -69,7 +69,7 @@ type Grid.t('content) = {
    * ]}
    * Note that the [max] value is also iterated.
   **/
-  for(min, max, iter) =
+  for(min, max, iter : int -> void) =
     rec aux(i) =
       if i > max then void else do iter(i) ; aux(succ(i))
     aux(min)
@@ -78,7 +78,7 @@ type Grid.t('content) = {
    * The first tuple is the bound of [i], the snd of [j],
    * and the function is the iteration.
   **/
-  for2((min, max), (min2, max2), iter) =
+  for2((min, max), (min2, max2), iter : int, int -> void) =
     for_i(i) =
       for(min2, max2, (j -> iter(i, j)))
     for(min, max, for_i)
