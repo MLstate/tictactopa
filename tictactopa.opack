@@ -1,5 +1,5 @@
 # sources for tictactopa
-src/column_set.opa
+src/colset.opa
 src/grid.opa
 src/game.opa
 src/ia.opa
