@@ -4,14 +4,15 @@
 .PHONY: doc
 
 OPA=s3opa.exe
-SEPARATION=--separated -I $(MLSTATELIBS)/opa-packages
+SEPARATION=--separated --autobuild -I $(MLSTATELIBS)/opa-packages
 
 tictactopa=tictactopa.opack
+conf=tictactopa.conf
 
 all: tictactopa.exe
 
 sep:
-	$(OPA) $(OPAOPT) $(SEPARATION) $(tictactopa) -o tictactopa.exe
+	$(OPA) $(OPAOPT) $(SEPARATION) --conf $(conf) $(tictactopa) -o tictactopa.exe
 
 loop:
 	while [ 1 ] ; do make -B all || true ; sleep 5 ; done
