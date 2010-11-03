@@ -35,6 +35,8 @@
  * and decide in an other moment to restart a new game.
 **/
 
+import tictactopa.{colset,grid,game}
+
 /**
  * {1 Common Types}
 **/
