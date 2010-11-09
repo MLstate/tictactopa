@@ -127,7 +127,7 @@ M(C : C.ARG.interface('c_state), S : S.ARG.interface('s_state)) = {{
   server page() =
     s_channel = Session.make(s_init(), s_on_message)
     <>
-      <div id="main" onload={c_onload(s_channel, _)}>
+      <div id="main" onready={c_onload(s_channel, _)}>
         "default page (not yet set by the client)"
       </div>
     </>

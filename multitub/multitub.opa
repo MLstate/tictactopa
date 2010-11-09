@@ -307,7 +307,7 @@ type Multitub.private.C.state('state) = {
 @server @private multitub_page() =
   s_channel = Session.make(s_init(), s_on_message)
   <>
-    <div id="multitub" onload={c_onload(s_channel, _)}>
+    <div id="multitub" onready={c_onload(s_channel, _)}>
       "multitub initialization..."
     </div>
   </>
