@@ -4,7 +4,7 @@
 .PHONY: doc
 
 OPA=s3opa.exe
-SEPARATION=--separated --autobuild -I $(MLSTATELIBS)/opa-packages
+SEPARATION=--separated --autobuild
 
 tictactopa=tictactopa.opack
 conf=tictactopa.conf
