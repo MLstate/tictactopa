@@ -358,7 +358,7 @@ type Game.state = {
   status(grid) : Game.status =
     // fake implementation, just for testing
     fst = GameParameters.first_player
-    snd = GameContent.neg_player(fst)
+    (snd : Game.player) = GameContent.neg_player(fst)
     n_fst =
       fst = @opensums(fst) : Game.content
       GameUtils.count(grid, fst)
