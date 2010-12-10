@@ -127,10 +127,11 @@ type Game.state = {
 
 /**
  * Probably unusefull if the type system upgrade.
- * restricted to the current package only.
+ * Should be restricted to the current package only,
+ * but is used is client.opa
  * Used in pattern matching only.
 **/
-@both @package FixTheTyper = {{
+@both FixTheTyper = {{
   player_of_content(c : Game.content) =
     match c with
     | {R}
