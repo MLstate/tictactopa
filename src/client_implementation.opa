@@ -85,7 +85,7 @@ type C.implementation.state = {
    * Cf Multitub desig, the [s_channel] is used for sending messages to the server.
    * The [message] can come from the server, or from some funactions.
   **/
-  on_message(s_channel : Multitub.S.channel, state : C.implementation.state, message : Multitub.C.message) =
+  on_message(s_channel : Multitub.S.channel, state : C.implementation.state, message : Multitub.C.message) : Session.instruction(C.implementation.state) =
     match message with
     | { jlog = message } ->
       do ClientLayout.jlog(message)

@@ -270,7 +270,7 @@ type Multitub.private.C.state('state) = {
   ~{ s_channel state } : Multitub.private.C.state
 
 @client @private c_on_message(state, message) =
-  map(internal_state) = { state with state = internal_state }
+  map(internal_state) = { state with state = internal_state } : Multitub.private.C.state
   session_map_instruction(map, Multitub_C.on_message(state.s_channel, state.state, message))
 
 /**

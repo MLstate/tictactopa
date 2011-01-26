@@ -126,7 +126,7 @@ type S.implementation.state = {
   /**
    * Handler
   **/
-  on_message(c_channel : Multitub.C.channel, state : S.implementation.state, message : Multitub.S.message) =
+  on_message(c_channel : Multitub.C.channel, state : S.implementation.state, message : Multitub.S.message) : Session.instruction(S.implementation.state) =
     match message with
     | { restart } ->
       state = ServerUtils.new_game(c_channel, state)

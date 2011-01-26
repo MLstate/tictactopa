@@ -407,7 +407,7 @@ type Game.state = {
     status = { in_progress = GameParameters.first_player } : Game.status
     content = { free } : Game.content
     grid = Grid.clear(game.grid, content)
-    { game with ~grid ~status }
+    { game with ~grid ~status } : Game.state
 
   /**
    * Play an action in the game.
