@@ -1,5 +1,5 @@
 /*
- * Tictactopa. (c) MLstate - 2010
+ * Tictactopa. (c) MLstate - 2011
  * @author Mathieu Barbin
 **/
 
@@ -21,7 +21,7 @@ type ClientToken.color = string
  * A type for manipulating tokens (via jQuery API)
  * @abstract
 **/
-type ClientToken.t = jquery
+type ClientToken.t = dom
 
 /**
  * {1 Tokens}
