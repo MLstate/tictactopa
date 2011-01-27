@@ -1,5 +1,5 @@
 /*
- * Tictactopa. (c) MLstate - 2010
+ * Tictactopa. (c) MLstate - 2011
  * @author Mathieu Barbin
 **/
 
@@ -128,15 +128,23 @@ type Grid.t('content) = {
   dimensions(grid : Grid.t) = grid.dimensions
 
   /**
+   * Get the content of a location in the content of a grid.
+   * Low level function, not exported.
+   * @errors(Unspecified in case of index out of bounds)
+  **/
+  @private getij_t(t : llarray(llarray('content)), column : Grid.column, line : Grid.line) =
+    t_line = LowLevelArray.get(t, column)
+    content = LowLevelArray.get(t_line, line)
+    content
+
+  /**
    * Get the content of a location in a grid.
    * Interface usefull for loops.
    * @errors(Unspecified in case of index out of bounds)
   **/
   getij(grid : Grid.t, column : Grid.column, line : Grid.line) =
     t = grid.t
-    t_line = LowLevelArray.get(t, column)
-    content = LowLevelArray.get(t_line, line)
-    content
+    getij_t(t, column, line)
 
   /**
    * Get the content of a location in a grid.
@@ -193,7 +201,7 @@ type Grid.t('content) = {
     dimensions = grid.dimensions
     columns = dimensions.columns
     lines = dimensions.lines
-    t = grid.t
+    grid_t = grid.t
     column = location.column
     line = location.line
     min_c = max(0, column - dist)
@@ -207,7 +215,7 @@ type Grid.t('content) = {
         else
           if ((i == column) && (j == line)) then aux(i, succ(j), acc)
           else
-            acc = fold(getij(grid, i, j), acc)
+            acc = fold(getij_t(grid_t, i, j), acc)
             aux(i, succ(j), acc)
     aux(min_c, min_l, acc)
 

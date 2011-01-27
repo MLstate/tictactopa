@@ -1,5 +1,5 @@
 /*
- * OPA design pattern collection. (c) MLstate - 2010
+ * OPA design pattern collection. (c) MLstate - 2011
  *
  * The Mutlitub pattern, for OPA-S3.
  * @author Mathieu Barbin
@@ -130,7 +130,7 @@ type Multitub.C.interface('state) = {
    * may be imperative, there are no reason to forbid it, e.g. wrt performances
    * depending on the kind of the application.
   **/
-  init : void -> 'state
+  init : -> 'state
 
   /**
    * Handle messages received from the server, or from some funaction in the page.
@@ -184,7 +184,7 @@ type Multitub.S.interface('state) = {
    * The initializer is not functionnal because the state of the server
    * may be imperative.
   **/
-  init : void -> 'state
+  init : -> 'state
 
   /**
    * Some initialization may be necessary once the server knows the client.

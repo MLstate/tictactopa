@@ -238,7 +238,6 @@ clear() =
     token = ClientToken.token(location)
     do ClientToken.clear(token)
     void
-  columns = pred
   do Loop.for2((0, GameParameters.dimensions.columns - 1), (0, GameParameters.dimensions.lines - 1), clear_token)
   void
 

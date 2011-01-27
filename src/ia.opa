@@ -1,5 +1,5 @@
 /*
- * Tictactopa. (c) MLstate - 2010
+ * Tictactopa. (c) MLstate - 2011
  * @author Mathieu Barbin
  */
 
@@ -79,7 +79,7 @@ IA_Winning = {{
         p = ( p : Game.player ) <: Game.content
         GameContent.equal(player, p)
       | _ -> false
-    grid = Grid.setij(grid, i, j, {free})
+    _grid = Grid.setij(grid, i, j, {free})
     res
 
   compute(grid : Game.grid, win : IA.winning_grid) : IA.winning_grid =

@@ -1,4 +1,5 @@
 # sources for tictactopa
+--warn-error root
 src/colset.opa
 src/grid.opa
 src/game.opa

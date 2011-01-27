@@ -1,5 +1,5 @@
 /*
- * Tictactopa. (c) MLstate - 2010
+ * Tictactopa. (c) MLstate - 2011
  * @author Mathieu Barbin
 **/
 
@@ -78,14 +78,7 @@ type ColSet.t = int
 
   specialize(setA, setB) =
     inter = inter(setA, setB)
-    if is_empty(inter) then setA else setB
-
-  priority_inter(list : list(ColSet.t), set : ColSet.t) =
-    fold_inter(set, acc) = specialize(acc, set)
-    match list with
-    | { nil } -> empty
-    | ~{ hd tl } ->
-      List.fold(fold_inter, tl, hd)
+    if is_empty(inter) then setA else inter
 
   /**
    * Pick a random elt in the set.

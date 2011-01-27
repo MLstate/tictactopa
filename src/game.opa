@@ -1,5 +1,5 @@
 /*
- * Tictactopa. (c) MLstate - 2010
+ * Tictactopa. (c) MLstate - 2011
  * @author Mathieu Barbin
 **/
 
@@ -249,9 +249,9 @@ type Game.state = {
    * Status detection:
    * From a non {free} case, follow from a location in a given direction as long as
    * the content does not change, or the value exceed goal. In this case, return the
-   * corresponding player.
+   * corresponding player, else return [none]
   **/
-  follow(grid : Game.grid, i, j, direction : Grid.location) =
+  follow(grid : Game.grid, i, j, direction : Grid.location) : Game.winner =
     goal = GameParameters.goal
     columns = GameParameters.dimensions.columns
     lines = GameParameters.dimensions.lines
@@ -280,7 +280,7 @@ type Game.state = {
    * Follow in every direction (4), from every non-free location.
    * Stops with the first success
   **/
-  status(grid : Game.grid) =
+  status(grid : Game.grid) : Game.winner =
     h = { column = 1 ; line = 0 }
     v = { column = 0 ; line = 1}
     du = { column = 1 ; line = 1 }
@@ -368,9 +368,13 @@ type Game.state = {
       GameUtils.count(grid, snd)
     total = GameParameters.dimensions.columns * GameParameters.dimensions.lines
     match GameUtils.status(grid) with
-    | ({some=player}) as winner ->
+    | ({some=_}) as winner ->
       { winner = winner }
     | _ ->
+      /*
+        In case [GameUtils.status = none], it could means that the game is over with exaeco,
+        or if the grid is not full, that the game is still in progress.
+      */
       if total == n_fst + n_snd
       then
         { winner = none }
