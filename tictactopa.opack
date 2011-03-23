@@ -1,5 +1,8 @@
-# sources for tictactopa
+# warning policy
 --warn-error root
+# conf
+tictactopa.conf
+# sources for tictactopa
 src/colset.opa
 src/grid.opa
 src/game.opa

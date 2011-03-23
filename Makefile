@@ -3,17 +3,14 @@
 
 .PHONY: doc
 
-OPA=s3opa.exe
-SEPARATION=--separated --autobuild
+OPA=opa.exe
 
 tictactopa=tictactopa.opack
 conf=tictactopa.conf
 
 all: tictactopa.exe
 
-sep:
-	$(OPA) $(OPAOPT) $(SEPARATION) --conf $(conf) $(tictactopa) -o tictactopa.exe
-
+# for compiling under emacs, like an ide for poor
 loop:
 	while [ 1 ] ; do make -B all || true ; sleep 5 ; done
 
@@ -23,3 +20,7 @@ tictactopa.exe:
 doc:
 	$(OPA) $(OPAOPT) $(tictactopa) --generate-interface
 	opadoc.exe src multitub
+
+clean:
+	rm -rf *.opx
+	rm tictactopa.exe
