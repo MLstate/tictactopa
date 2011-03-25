@@ -54,12 +54,12 @@ onclick_token(i, j) =
   do jlog("Your click : {i},{j}")
   do exec( [ #status <- "Your click : {i}{j}" ])
   color=(if mod(i+j, 2) == 0 then { yellow } else { red })
-  token = unarySharp("token{i}{j}")
-  do if jQuery.hasClass("red", token) || jQuery.hasClass("yellow", token)
+  token = Dom.select_id("token{i}{j}")
+  do if Dom.has_class( token, "red") || Dom.has_class(token, "yellow")
   then
-    jQuery.removeClass("red yellow", token)
+    Dom.remove_class(token, "red yellow")
   else
-    jQuery.addClass(token_class(color), token)
+    Dom.add_class(token, token_class(color))
   void
 
 all() =

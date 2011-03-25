@@ -18,7 +18,7 @@
 type ClientToken.color = string
 
 /**
- * A type for manipulating tokens (via jQuery API)
+ * A type for manipulating tokens (via Dom API)
  * @abstract
 **/
 type ClientToken.t = dom
@@ -128,7 +128,7 @@ token(location : Grid.location) =
  * The token will no longer be visible.
 **/
 clear(token : ClientToken.t) =
-  _ = jQuery.removeClass("red yellow", token)
+  _ = Dom.remove_class(token, "red yellow")
   void
 
 /**
@@ -137,7 +137,7 @@ clear(token : ClientToken.t) =
 colorize(token : ClientToken.t, player : Game.player) =
   color = color_of_player(player)
   do clear(token)
-  _ = jQuery.addClass(color, token)
+  _ = Dom.add_class(token, color)
   void
 
 /**
@@ -147,10 +147,10 @@ colorize(token : ClientToken.t, player : Game.player) =
 **/
 content(token : ClientToken.t) =
   content =
-    if jQuery.hasClass("red", token)
+    if Dom.has_class( token, "red")
     then player_of_color("red")
     else
-      if jQuery.hasClass("yellow", token)
+      if Dom.has_class(token, "yellow")
       then player_of_color("yellow")
       else {free}
   content : Game.content
