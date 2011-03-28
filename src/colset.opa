@@ -75,7 +75,6 @@ type ColSet.t = int
    * Folding intersection, but ignoring sets which
    * make the intersection become empty.
   **/
-
   specialize(setA, setB) =
     inter = inter(setA, setB)
     if is_empty(inter) then setA else inter

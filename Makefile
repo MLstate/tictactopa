@@ -4,11 +4,9 @@
 .PHONY: doc
 
 OPA=opa.exe
+OPADOC=opadoc-gen.exe
 
-opack=tictactopa.opack
-conf=tictactopa.conf
-
-tictactopa=$(opack) $(conf)
+tictactopa=tictactopa.opack
 
 all: tictactopa.exe
 
@@ -19,11 +17,12 @@ hello_grid.exe:
 	$(OPA) $(OPAOPT) src/hello_grid.opa -o hello_grid.exe
 
 doc:
-	$(OPA) $(OPAOPT) $(tictactopa) --generate-interface
-	opadoc.exe src multitub
+	$(OPA) $(OPAOPT) $(tictactopa) --generate-interface-and-compile -o tictactopa.exe
+	$(OPADOC) src multitub
 
 clean:
-	rm -rf *.opx
+	rm -rf *.opx *.opx.broken
 	rm -f *.exe
 	rm -rf _build _tracks
 	rm -f *.log
+	rm -f *.apix
