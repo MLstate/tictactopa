@@ -1,6 +1,14 @@
+/*
+ * Tictactopa. (c) MLstate - 2011
+ * @author Mathieu Barbin
+**/
+
 /**
- * Global properties for setting the grid
+ * This is a test program to show the client manipulation
+ * of the game grid. It contains the global properties for
+ * setting the grid, and uses the resources of the game.
  */
+
 // global_margin = 20
 // size_token = 83
 // box_token=97
@@ -13,7 +21,8 @@
 // y = global_margin + margin_y_token + (6 - line) * box_token
 // column
 // x = global_margin + margin_x_token + (column - 1) * box_token
-// But this is better so :
+// But this fits better so :
+
 absolute_token_x =
   | 1 -> 44
   | 2 -> 140
@@ -22,6 +31,7 @@ absolute_token_x =
   | 5 -> 430
   | 6 -> 527
   | 7 -> 624
+
 absolute_token_y =
   | 1 -> 527
   | 2 -> 430
