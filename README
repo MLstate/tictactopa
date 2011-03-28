@@ -9,3 +9,10 @@ For a quick start:
  2. make
  3. ./tictactopa.exe -p 8080
  4. open your favorite web browser at: http://localhost:8080
+
+tictactopa is written by Mathieu Barbin, with contributions from:
+
+  Francois Pessaux
+  David Rajchenbach-Teller
+  Francois-Regis Sinot
+  Valentin Gatien-Baron
