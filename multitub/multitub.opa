@@ -121,8 +121,7 @@ type Multitub.S.channel = channel(Multitub.private.S.message)
  *    }}
  * ]}
 **/
-// FIXME: should be a module interface
-type Multitub.C.interface('state) = {
+type Multitub.C.interface('state) = {{
 
   /**
    * Create the internal state of the client.
@@ -159,7 +158,7 @@ type Multitub.C.interface('state) = {
    * not be used.
   **/
   page : Multitub.S.channel, Multitub.C.channel -> xhtml
-}
+}}
 
 /**
  * {2 Server}
@@ -176,8 +175,7 @@ type Multitub.C.interface('state) = {
  *    }}
  * ]}
 **/
-// FIXME: should be a module interface
-type Multitub.S.interface('state) = {
+type Multitub.S.interface('state) = {{
 
   /**
    * Create the internal state of the server.
@@ -206,7 +204,7 @@ type Multitub.S.interface('state) = {
    * use the function [Multitub.send_client] on the client channel.
   **/
   on_message : Multitub.C.channel, 'state, Multitub.S.message -> Session.instruction('state)
-}
+}}
 
 
 /**
@@ -255,11 +253,12 @@ type Multitub.private.C.state('state) = {
 /**
  * Maping instructions for sub-state manipulation.
 **/
-@private session_map_instruction(map, i) =
-  match i : Session.instruction with
+@private session_map_instruction(map : 'a -> 'b, i) : Session.instruction('b) =
+  match i : Session.instruction('a) with
   | {set = state} -> {set = map(state)}
-  | {unchanged}
-  | {stop} -> Magic.id(i) : Session.instruction // Fixme: do something with the typer
+  | {unchanged} as i
+  | {stop} as i
+    -> i
 
 /**
  * {2 Client}

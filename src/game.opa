@@ -169,17 +169,17 @@ type Game.state = {
     | { R } -> { Y }
     | { Y } -> { R }
 
-  neg(content) =
+  neg(content) : Game.content =
     match content : Game.content with
     | { free } -> content
-    | player ->
-      @opensums(neg_player(FixTheTyper.player_of_content(player))) : Game.content
+    | { R } -> { Y }
+    | { Y } -> { R }
 
   compare_player(p1 : Game.player, p2 : Game.player) =
-    compare(@opensums(p1) : Game.content, @opensums(p2) : Game.content)
+    compare(p1 <: Game.content, p2 <: Game.content)
 
   equal_player(p1 : Game.player, p2 : Game.player) =
-    equal(@opensums(p1) : Game.content, @opensums(p2) : Game.content)
+    equal(p1 <: Game.content, p2 <: Game.content)
 
 }}
 
@@ -257,21 +257,28 @@ type Game.state = {
     lines = GameParameters.dimensions.lines
     match Grid.getij(grid, i, j) with
     | {free} -> none
+
+    // FIXME: replace by the following, once it will be available in OPA:
+    /*
+    | ( { R } | { Y } ) as player
+    */
     | player ->
+      player = FixTheTyper.player_of_content(player)
+    // end of FIXME
+
       di = direction.column
       dj = direction.line
       rec aux(dst, i, j) =
         // do jlog("  aux(dst:{dst}, {i}, {j}, di:{di}, dj:{dj})")
         if dst >= goal
         then
-          player = FixTheTyper.player_of_content(player)
           some(player)
         else
           if (i < 0) || (j < 0) || (i >= columns) || (j >= lines)
           then none
           else
             content = Grid.getij(grid, i, j)
-            if GameContent.equal(content, player)
+            if GameContent.equal(content, player <: Game.content)
             then aux(succ(dst), i+di, j+dj)
             else none
       aux(1, i+di, j+dj) : option(Game.player)
@@ -433,7 +440,7 @@ type Game.state = {
            the type to {b Game.content} is a handy workaround against the
            current @opensums bug in the typechecker
            (see test 02-subsums.opa).
-           However, FIXME: @opensums(player) : Game.content */
+           However, FIXME: player <: Game.content */
         content = (player : Game.player) <: Game.content
         grid = Grid.set(grid, location, content)
         status = GameRules.status(grid)

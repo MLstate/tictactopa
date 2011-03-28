@@ -202,8 +202,13 @@ set_content(location : Grid.location, content : Game.content) =
   token = ClientToken.token(location)
   match content with
   | {free} -> ClientToken.clear(token)
-  | _ ->
-    player = FixTheTyper.player_of_content(content)
+  // FIXME: replace by the following line, once available in OPA
+  /*
+  | ( { R } | { Y } ) as player ->
+  */
+  | { R } as player
+  | { Y } as player ->
+  // end of FIXME
     ClientToken.colorize(token, player)
 
 get_content(location : Grid.location) =
@@ -295,7 +300,8 @@ xhtml(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
 
   /**
    * Build the complete page.
-   * <!> FIXME: this function cannot comport any jlog, it cause a looping initialization.
+   * <!> FIXME: this function cannot comport any jlog,
+   * it cause a looping initialization.
   **/
   page(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
     xhtml =
