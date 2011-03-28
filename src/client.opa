@@ -92,7 +92,7 @@ type ClientToken.t = dom
  * All token are accessible from their position.
 **/
 token(location : Grid.location) =
-  unarySharp(id(location)) : ClientToken.t
+  Dom.select_id(id(location)) : ClientToken.t
 
 /**
  * Get the 'style' property of a token from its location.
@@ -178,7 +178,7 @@ xhtml(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel, location :
  * assigned to the client during the game.
 **/
 make(name : string) =
-  unarySharp(name) : ClientToken.t
+  Dom.select_id(name) : ClientToken.t
 
 }}
 
@@ -312,7 +312,7 @@ xhtml(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
           Your token color for this game : <div id="{player_id}" class={["yourtoken"]} />
         </div>
         <div id="{status_id}"></div>
-        <select id="{level_id}" onchange={Funaction.level(s_channel, c_channel, unarySharp(level_id), _)}>
+        <select id="{level_id}" onchange={Funaction.level(s_channel, c_channel, Dom.select_id(level_id), _)}>
           <option value=0 selected>level:random</option>
           <option value=1>level:dummy</option>
           <option value=2>level:novice</option>
