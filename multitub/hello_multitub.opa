@@ -1,5 +1,5 @@
 /**
- * OPA design pattern collection. (c) MLstate - 2010
+ * OPA design pattern collection. (c) MLstate - 2010-2011
  *
  * The Mutlitub pattern, for OPA-S3.
  * @author Mathieu Barbin
@@ -45,7 +45,7 @@ type Multitub.C.message = { value : int } / { funaction }
 
 type S1.state = { value : int }
 
-server Multitub_S : Multitub.S.interface(S1.state) = {{
+@server Multitub_S : Multitub.S.interface(S1.state) = {{
   init() =
     { value = 0 } : S1.state
 
@@ -60,6 +60,8 @@ server Multitub_S : Multitub.S.interface(S1.state) = {{
       value = { value = int }
       do Multitub.send_client(c_channel, value)
       { set = value }
+
+  on_connection(_ : Multitub.C.channel, state : S1.state) = state
 }}
 
 /**
@@ -75,16 +77,16 @@ type C1.state = { num_a : int }
  * Example of a funaction sending directly a message to the server.
  */
 
-client messageB(s_channel, i, _) =
+@client messageB(s_channel, i, _) =
   Multitub.send_server(s_channel, {b=i})
 
 /**
  * Example of a funaction which use the client session
  */
-client messageA(c_channel, _) =
+@client messageA(c_channel, _) =
   Multitub.send_client(c_channel, {funaction})
 
-client page(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
+@client page(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
   <>
     <h2>Response of the server</h2>
     <div id="response"/>
@@ -98,7 +100,7 @@ client page(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
     <a id={"messageB3"} class="button" href="#" onclick={messageB(s_channel, 3, _)}>{"Message B(3)"}</a>
   </>
 
-client Multitub_C : Multitub.C.interface(C1.state) = {{
+@client Multitub_C : Multitub.C.interface(C1.state) = {{
   init() =
     { num_a = 0 } : C1.state
 
