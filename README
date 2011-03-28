@@ -1,0 +1,11 @@
+tictactopa: an open-source tictactoe game written in OPA.
+@author(s): mathieu.barbin@mlstate.com
+@licence: AGPL
+@copyright: (c) MLstate - 2010-2011
+
+For a quick start:
+
+ 1. be sure you have a working OPA configuration
+ 2. make
+ 3. ./tictactopa.exe -p 8080
+ 4. open your favorite web browser at: http://localhost:8080
