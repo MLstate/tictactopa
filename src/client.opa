@@ -19,8 +19,8 @@ type ClientToken.color = string
 
 /**
  * A type for manipulating tokens (via Dom API)
- * @abstract
 **/
+@abstract
 type ClientToken.t = dom
 
 /**

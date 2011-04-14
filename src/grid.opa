@@ -4,7 +4,6 @@
 **/
 
 package tictactopa.grid
-// import stdlib.llarray
 
 /**
  * {0 Manipulation of the Grid}
@@ -51,8 +50,8 @@ type Grid.location = {
 /**
  * The type for manipulating a grid.
  * The dimensions are cached.
- * @abstract
 **/
+@abstract
 type Grid.t('content) = {
   dimensions : Grid.dimensions ;
   t : llarray(llarray('content)) ;

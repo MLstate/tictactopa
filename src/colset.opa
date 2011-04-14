@@ -20,8 +20,8 @@ type ColSet.elt = int
 
 /**
  * The type of a set of elements of type [ColSet.elt]
- * @abstract
 **/
+@abstract
 type ColSet.t = int
 
 @both @public ColSet = {{

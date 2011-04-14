@@ -60,9 +60,8 @@
  * With '@abstract' we denote that user of this lib should not enter the implementation
  * of the type, but just using function exported in this file to manipulate values
  * of this type.
- * (will be replaced any time by a better typing feature)
- * @abstract
 **/
+@abstract
 type Multitub.C.channel = channel(Multitub.C.message)
 
 /**
@@ -85,14 +84,16 @@ type Multitub.C.channel = channel(Multitub.C.message)
  * so that the server can store it in its state for sending him some messages.
  * With '@private' we denote that this type should not be exported outside
  * of this file, and the user of the design does not manipulate it at all.
- * (will be replaced any time by a better typing feature)
- * @private
 **/
+@private
 type Multitub.private.S.message = { message : Multitub.S.message } / { set_c_channel : Multitub.C.channel }
 
 /**
- * @abtract
+ * With '@abstract' we denote that user of this lib should not enter the implementation
+ * of the type, but just using function exported in this file to manipulate values
+ * of this type.
 **/
+@abstract
 type Multitub.S.channel = channel(Multitub.private.S.message)
 
 /**
@@ -232,8 +233,8 @@ type Multitub.S.interface('state) = {{
 
 /**
  * The state of the server session.
- * @private
 **/
+@private
 type Multitub.private.S.state('state) = {
   c_channel : option(Multitub.C.channel)
   state : 'state
@@ -241,8 +242,8 @@ type Multitub.private.S.state('state) = {
 
 /**
  * The state of the client session.
- * @private
 **/
+@private
 type Multitub.private.C.state('state) = {
   s_channel : Multitub.S.channel
   state : 'state
