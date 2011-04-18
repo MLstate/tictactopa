@@ -60,6 +60,7 @@ type ClientToken.t = dom
   | 4 -> 430
   | 5 -> 527
   | 6 -> 624
+  | _ -> @fail
 
 /**
  * From the line of the token, get the absolute position from the top side
@@ -73,6 +74,7 @@ type ClientToken.t = dom
   | 3 -> 235
   | 4 -> 136
   | 5 -> 39
+  | _ -> @fail
 
 /**
  * {1 Layout}
@@ -118,11 +120,6 @@ token(location : Grid.location) =
   | {Y} -> "yellow"
   | {R} -> "red"
 
-@private player_of_color(color : ClientToken.color) =
-  match color with
-  | "yellow" -> {Y}
-  | "red" -> {R}
-
 /**
  * Clear a token, which means : remove all its color classes.
  * The token will no longer be visible.
@@ -148,10 +145,10 @@ colorize(token : ClientToken.t, player : Game.player) =
 content(token : ClientToken.t) =
   content =
     if Dom.has_class( token, "red")
-    then player_of_color("red")
+    then {R}
     else
       if Dom.has_class(token, "yellow")
-      then player_of_color("yellow")
+      then {Y}
       else {free}
   content : Game.content
 
