@@ -36,8 +36,8 @@ type ColSet.t = int
   add(i : ColSet.elt, set : ColSet.t) : ColSet.t =
     Int.lor(set, Int.lsl(1, i))
 
-  inter = Int.land : ColSet.elt, ColSet.elt -> ColSet.elt
-  union = Int.lor : ColSet.elt, ColSet.elt -> ColSet.elt
+  inter = Int.land : ColSet.t, ColSet.t -> ColSet.t
+  union = Int.lor : ColSet.t, ColSet.t -> ColSet.t
 
   fold(fold, set : ColSet.t, acc) =
     rec aux(elt, set, acc) =
