@@ -26,20 +26,20 @@ type ColSet.t = int
 
 @both @public ColSet = {{
 
-  empty = 0
+  empty = 0 : ColSet.t
 
-  is_empty(set) = set == empty
+  is_empty(set : ColSet.t) = set == empty
 
-  mem(i, set) =
+  mem(i : ColSet.elt, set : ColSet.t) : ColSet.elt =
     Int.land(1, Int.lsr(set, i))
 
-  add(i, set) =
+  add(i : ColSet.elt, set : ColSet.t) : ColSet.t =
     Int.lor(set, Int.lsl(1, i))
 
-  inter = Int.land
-  union = Int.lor
+  inter = Int.land : ColSet.elt, ColSet.elt -> ColSet.elt
+  union = Int.lor : ColSet.elt, ColSet.elt -> ColSet.elt
 
-  fold(fold, set, acc) =
+  fold(fold, set : ColSet.t, acc) =
     rec aux(elt, set, acc) =
       if set == 0 then acc
       else
@@ -50,23 +50,23 @@ type ColSet.t = int
         aux(succ(elt), Int.lsr(set, 1), acc)
    aux(0, set, acc)
 
-  map(map, set) =
+  map(map, set : ColSet.t) : ColSet.t =
     aux(elt, set) = add(map(elt), set)
     fold(aux, set, empty)
 
-  iter(iter, set) =
+  iter(iter, set : ColSet.t) =
     aux(elt, _) = iter(elt) : void
     fold(aux, set, void)
 
-  elements(set) =
+  elements(set : ColSet.t) : list(ColSet.elt) =
     list = fold(List.cons, set, List.empty)
     List.rev(list)
 
-  size(set) =
+  size(set : ColSet.t) =
     aux(_, acc) = succ(acc)
     fold(aux, set, 0)
 
-  to_string(set) =
+  to_string(set : ColSet.t) =
     cons(hd, tl) = List.cons(string_of_int(hd), tl)
     list = fold(cons, set, List.empty)
     List.to_string(List.rev(list))
@@ -75,7 +75,7 @@ type ColSet.t = int
    * Folding intersection, but ignoring sets which
    * make the intersection become empty.
   **/
-  specialize(setA, setB) =
+  specialize(setA : ColSet.t, setB : ColSet.t) =
     inter = inter(setA, setB)
     if is_empty(inter) then setA else inter
 
@@ -83,7 +83,7 @@ type ColSet.t = int
    * Pick a random elt in the set.
    * Returns { none } if the set is empty
   **/
-  random(set) =
+  random(set : ColSet.t) : option(ColSet.elt) =
     rec aux(elt, set, size) =
       if set == 0 then none
       else

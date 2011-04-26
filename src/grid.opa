@@ -108,7 +108,7 @@ type Grid.t('content) = {
   /**
    * Creating a new grid form [dimensions] and a default [content].
   **/
-  make(dimensions : Grid.dimensions, content) =
+  make(dimensions : Grid.dimensions, content) : Grid.t =
     c = dimensions.columns
     l = dimensions.lines
     line() = LowLevelArray.create(l, content)
