@@ -1,5 +1,5 @@
 # compile a simple example using multitub pattern
-OPA=opa.exe
+OPA=opa
 
 SOURCES=multitub.opa hello_multitub.opa
 

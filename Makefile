@@ -3,8 +3,8 @@
 
 .PHONY: doc
 
-OPA=opa.exe
-OPADOC=opadoc-gen.exe
+OPA=opa
+OPADOC=opadoc
 
 tictactopa=tictactopa.opack
 
@@ -17,8 +17,8 @@ hello_grid.exe:
 	$(OPA) $(OPAOPT) src/hello_grid.opa -o hello_grid.exe
 
 doc:
-	$(OPA) $(OPAOPT) $(tictactopa) --generate-interface-and-compile -o tictactopa.exe
-	$(OPADOC) src multitub
+	$(OPA) $(OPAOPT) $(tictactopa) --api -o tictactopa.exe
+	$(OPADOC) src multitub -o doc
 
 clean:
 	rm -rf *.opx *.opx.broken
