@@ -15,7 +15,7 @@ import tictactopa.{colset,grid}
 **/
 
 /**
- *
+ * Supported level of the IA.
 **/
 type IA.parameters = {level : int}
 
@@ -46,8 +46,11 @@ type IA.state = {
 
 IA_Winning = {{
 
-  bottom = { R = false ; Y = false }
+  bottom = { R = false ; Y = false } : IA.winning_location
 
+  /**
+   * Reads the field corresponding to the player
+  **/
   read(winning : IA.winning_location, player : Game.player) =
     match player with
     | {R} -> winning.R
@@ -63,12 +66,6 @@ IA_Winning = {{
   @private reset(win : IA.winning_grid) =
     Grid.clear(win, bottom)
 
-  /**
-   * Compute a winning table.
-   * The interface is so that we can use an imperative or a persistent
-   * implementation for the winning_grid.
-  **/
-
   // utils. assert: the location is free
   @private winning_ij(grid, i, j, player : Game.content) =
     grid = Grid.setij(grid, i, j, player)
@@ -82,6 +79,11 @@ IA_Winning = {{
     _grid = Grid.setij(grid, i, j, {free})
     res
 
+  /**
+   * Compute a winning table.
+   * The interface is so that we can use an imperative or a persistent
+   * implementation for the winning_grid.
+  **/
   compute(grid : Game.grid, win : IA.winning_grid) : IA.winning_grid =
     win = reset(win)
     iter(i, j) =
@@ -187,7 +189,7 @@ IA_Winning = {{
    * Main function
    * For simplicity, the IA is state less.
    * It bring a lot of flexibility for this simple game.
-   * The status of the grid should be { in_progress } or
+   * The status of the grid should be [{ in_progress }] or
    * this will raise an error.
    * Since this is stateless, we can by using it add an url
    * to the application for having a web service to play the tictactoe

@@ -19,11 +19,10 @@ package tictactopa.grid
 
 /**
  * Dimensions of the game. 7 columns, 6 lines.
- * Beware, the number of lines should be a multiple of 2 (precondition of the IA)
+ * Beware, the number of lines should be a multiple of 2 (precondition of the IA).
  * Actually, the code looks like generic, and size-extensible, but the ClientLayout,
  * as well as the image used for drawing the table is not.
  * But, we'd like to be able to use this server lib with some other clients.
- * @public
 **/
 type Grid.dimensions = {
   columns : int ;
@@ -36,7 +35,6 @@ type Grid.dimensions = {
  * Speeking as coordonates, we index [(column, line)],
  * with column and line starting from value [0], and getting
  * until [(Grid.dimensions.columns - 1, Grid.dimensions.lines - 1)]
- * @public
 **/
 
 type Grid.column = int
@@ -68,7 +66,7 @@ type Grid.t('content) = {
    *   for i = min to max do
    *      iter(i);
    *   done
-   * ]}
+   * }
    * Note that the [max] value is also iterated.
   **/
   for(min, max, iter : int -> void) =
@@ -79,6 +77,14 @@ type Grid.t('content) = {
   /**
    * The first tuple is the bound of [i], the snd of [j],
    * and the function is the iteration.
+   * [for((min, max), (min2, max2), iter)] is equivalent to the imperative form
+   * {[
+   *   for i = min to max do
+   *     for j = min2 to max2 do
+   *       iter(i, j);
+   *     done
+   *   done
+   * }
   **/
   for2((min, max), (min2, max2), iter : int, int -> void) =
     for_i(i) =
@@ -108,7 +114,7 @@ type Grid.t('content) = {
   /**
    * Creating a new grid form [dimensions] and a default [content].
   **/
-  make(dimensions : Grid.dimensions, content) : Grid.t =
+  make(dimensions : Grid.dimensions, content : 'content) : Grid.t =
     c = dimensions.columns
     l = dimensions.lines
     line() = LowLevelArray.create(l, content)
@@ -186,7 +192,7 @@ type Grid.t('content) = {
   /**
    * Fold. Column by column first, and inside, line by line.
   **/
-  fold(fold, grid : Grid.t, acc) =
+  fold(fold, grid : Grid.t('content), acc : 'acc) =
     t = grid.t
     fold_line(line, acc) = LowLevelArray.fold(fold, line, acc)
     LowLevelArray.fold(fold_line, t, acc)
@@ -196,7 +202,7 @@ type Grid.t('content) = {
    * The location itself is not folded.
    * The dist if the maximal distance separating 2 neibourghs.
   **/
-  fold_neibourgh(fold, grid : Grid.t, location : Grid.location, dist : int, acc) =
+  fold_neibourgh(fold, grid : Grid.t('content), location : Grid.location, dist : int, acc : 'acc) =
     dimensions = grid.dimensions
     columns = dimensions.columns
     lines = dimensions.lines
@@ -220,7 +226,7 @@ type Grid.t('content) = {
 
 
    /**
-    *
+    * iter on all locations of the Grid
    **/
    iterij(grid : Grid.t, iter) =
      dimensions = grid.dimensions

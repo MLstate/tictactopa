@@ -19,12 +19,14 @@ import tictactopa.{colset,grid}
 **/
 
 /**
- * Representation of grid contents
- * Two players, { free } meaning the location is free.
  * Letter stands for red and yellow, the classical colors for this game.
 **/
-
 type Game.player = { R } / { Y }
+
+/**
+ * Representation of grid contents
+ * Two players, [{free}] meaning the location is free.
+**/
 type Game.content = Game.player / { free }
 
 /**
@@ -39,14 +41,13 @@ type Game.content = Game.player / { free }
 type Game.action = Grid.column
 
 
-
 /**
  * {2 Status}
 **/
 
 /**
  * The analysis of a grid
- * + winner : the game is over, the player has win, or {none} for exaeco
+ * + winner : the game is over, the player has win, or [{none}] for exaeco
  * + in_progress : the game is in progress, the player should play
  * + incoherent : an error occured, the content is incoherent
 **/
@@ -146,7 +147,7 @@ type Game.state = {
 @both @public GameContent = {{
 
   /**
-   * { free } < { R } < { Y }
+   * [{free} < {R} < {Y}]
   **/
   compare(content : Game.content, content2 : Game.content) =
     match (content, content2) with
@@ -162,9 +163,9 @@ type Game.state = {
 
   /**
    * Returns the negation of the Game.content.
-   * The negation of { free } is { free }.
+   * The negation of [{free}] is [{free}].
   **/
-  neg_player(player) =
+  neg_player(player) : Game.player =
     match player : Game.player with
     | { R } -> { Y }
     | { Y } -> { R }
@@ -189,7 +190,7 @@ type Game.state = {
 
 @both @public GameUtils = {{
 
- /**
+  /**
    * Return the number of content present in the grid
   **/
   count(grid : Game.grid, content : Game.content) =
@@ -199,8 +200,8 @@ type Game.state = {
 
   /**
    * Check that the difference between player content.
-   * {Y} is by convention the first to play.
-   * #{Y}-1 <= #{R} <= #{Y}
+   * [{Y}] is by convention the first to play.
+   * An invariant is [#{Y}-1 <= #{R} <= #{Y}]
   **/
   count_check(grid : Game.grid) =
     y = count(grid, {Y})
@@ -247,9 +248,9 @@ type Game.state = {
 
   /**
    * Status detection:
-   * From a non {free} case, follow from a location in a given direction as long as
+   * From a non [{free}] case, follow from a location in a given direction as long as
    * the content does not change, or the value exceed goal. In this case, return the
-   * corresponding player, else return [none]
+   * corresponding player, else return [{none}]
   **/
   follow(grid : Game.grid, i, j, direction : Grid.location) : Game.winner =
     goal = GameParameters.goal
@@ -331,12 +332,12 @@ type Game.state = {
 
   /**
    * Returns the player which need to play.
-   * As a convention, { Y } is always the first
+   * As a convention, [{Y}] is always the first
    * to play from an empty grid.
    *
-   * In case of incohrence, this will return {R}
+   * In case of incohrence, this will return [{R}]
   **/
-  who_plays(grid : Game.grid) =
+  who_plays(grid : Game.grid) : Game.player =
     y = GameUtils.count(grid, { Y })
     r = GameUtils.count(grid, { R })
     if y == r then { Y } else { R }
@@ -350,7 +351,8 @@ type Game.state = {
   /**
    * Compute possible actions.
    * In particular, If and only if the status is not
-   * { in_progress }, the set will be empty.
+   * [{ in_progress }], the set will be empty. The status is defined as {!Game.status}
+   * can be returned by {!GameRules.status}
   **/
   actions(grid : Game.grid) =
     columns = Grid.dimensions(grid).columns
@@ -398,7 +400,7 @@ type Game.state = {
 
 @both @public Game = {{
 
-  make() =
+  make() : Game.state =
     goal = GameParameters.goal
     // Convention: The Yellow are always the first to play
     status = { in_progress = GameParameters.first_player } : Game.status
@@ -414,7 +416,7 @@ type Game.state = {
    * Preserve current IA level.
    * This is also an optimization for imperative implementation. Relax the GC
   **/
-  reset(game) =
+  reset(game : Game.state) =
     status = { in_progress = GameParameters.first_player } : Game.status
     content = { free } : Game.content
     grid = Grid.clear(game.grid, content)
@@ -427,7 +429,7 @@ type Game.state = {
    * We return a game, updating its status.
    * This is a precondition of the function.
   **/
-  play(game : Game.state, action : Game.action) =
+  play(game : Game.state, action : Game.action) : Game.state =
     match game.status with
     | { in_progress = player } ->
       grid = game.grid

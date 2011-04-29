@@ -39,11 +39,11 @@ type ClientToken.t = dom
 /**
  * Sadly, the images used for the grid and the token are not regular
  * A aproximantion is :
- * line
- * y = global_margin + margin_y_token + (6 - line) * box_token
- * column
- * x = global_margin + margin_x_token + (column - 1) * box_token
- * But this does not fit perfectly in the resource/grid.png
+ * {b line}:
+ * {[y = global_margin + margin_y_token + (6 - line) * box_token}
+ * {b column}:
+ * {[x = global_margin + margin_x_token + (column - 1) * box_token}
+ * But this does not fit perfectly in the [resource/grid.png].
  * The 2 following simple switches are efficient, and simple.
 **/
 

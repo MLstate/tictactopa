@@ -8,7 +8,7 @@
 /**
  * {1 Multitub}
  *
- * In this design pattern, we denote by 'tub' a new connexion. (a new client on the server)
+ * In this design pattern, we denote by 'tub' a new connexion. (a new client on the server).
  * For each 'tub', we have 2 sessions, one created on the server side, and one on the client side.
  *
  * The type of messages handled by theses 2 sessions are the only authorized exchanges
@@ -50,16 +50,16 @@
 /**
  * The type [Multitub.C.message] should be defined in one of the file of the application.
  * It corresponds to the type representing all mesages sent by the server to the
- * client, and the messages sent by some funactions (client private messages)
+ * client, and the messages sent by some funactions (client private messages).
  * The handler of the client will perform some actions when it receives
  * the messages, e.g. DOM modification / state modification, etc.
 **/
 // type Multitub.C.message = ??
 
 /**
- * With '@abstract' we denote that user of this lib should not enter the implementation
+ * The user of this lib should not enter the implementation
  * of the type, but just using function exported in this file to manipulate values
- * of this type.
+ * of this type. See in particular the function {!Multitub.send_client}
 **/
 @abstract
 type Multitub.C.channel = channel(Multitub.C.message)
@@ -89,9 +89,9 @@ type Multitub.C.channel = channel(Multitub.C.message)
 type Multitub.private.S.message = { message : Multitub.S.message } / { set_c_channel : Multitub.C.channel }
 
 /**
- * With '@abstract' we denote that user of this lib should not enter the implementation
+ * The user of this lib should not enter the implementation
  * of the type, but just using function exported in this file to manipulate values
- * of this type.
+ * of this type. See in particular the function {!Multitub.send_server}
 **/
 @abstract
 type Multitub.S.channel = channel(Multitub.private.S.message)
@@ -120,45 +120,47 @@ type Multitub.S.channel = channel(Multitub.private.S.message)
  *    @client Multitub_C : Multitub.C.interface = {{
  *      ...
  *    }}
- * ]}
+ * }
+ *
+ * {b init}
+ * Create the internal state of the client.
+ * The initializer is not functionnal because the state of the client
+ * may be imperative, there are no reason to forbid it, e.g. wrt performances
+ * depending on the kind of the application.
+ *
+ * {b on_message}
+ * Handle messages received from the server, or from some funaction in the page.
+ * Possibly, send back some messages to the server asynchronously.
+ * In that case, you must use the function [Multitub.send_server] on the server channel.
+ *
+ * {b page}
+ * Creating the page, on the client side. By convention of the design,
+ * funaction should be tagged @client, and can use one or both of channels,
+ * depending on what does the funaction do.
+ * Example:
+ * {[
+ *    @client funaction(s_channel, c_channel, event) =
+ *       // depending on the event, send messages to s_channel, or c_channel
+ *
+ *    C = {{
+ *      page(s_channel, c_channel) =
+ *        ...
+ *        <div id="myfunaction" onclick={funaction(s_channel, c_channel, _)}/>
+ *    }}
+ * }
+ *
+ * <!> The DOM element id 'multitub' is reserved by the application, and should
+ * not be used.
+ *
 **/
 type Multitub.C.interface('state) = {{
 
-  /**
-   * Create the internal state of the client.
-   * The initializer is not functionnal because the state of the client
-   * may be imperative, there are no reason to forbid it, e.g. wrt performances
-   * depending on the kind of the application.
-  **/
   init : -> 'state
 
-  /**
-   * Handle messages received from the server, or from some funaction in the page.
-   * Possibly, send back some messages to the server asynchronously.
-   * In that case, you must use the function [Multitub.send_server] on the server channel.
-  **/
   on_message : Multitub.S.channel, 'state, Multitub.C.message -> Session.instruction('state)
 
-  /**
-   * Creating the page, on the client side. By convention of the design,
-   * funaction should be tagged @client, and can use one or both of channels,
-   * depending on what does the funaction do.
-   * Example:
-   * {[
-   *    @client funaction(s_channel, c_channel, event) =
-   *       // depending on the event, send messages to s_channel, or c_channel
-   *
-   *    C = {{
-   *      page(s_channel, c_channel) =
-   *        ...
-   *        <div id="myfunaction" onclick={funaction(s_channel, c_channel, _)}/>
-   *    }}
-   * ]}
-   *
-   * <!> The DOM element id 'multitub' is reserved by the application, and should
-   * not be used.
-  **/
   page : Multitub.S.channel, Multitub.C.channel -> xhtml
+
 }}
 
 /**
@@ -174,36 +176,37 @@ type Multitub.C.interface('state) = {{
  *    @server Multitub_S : Multitub.S.interface = {{
  *      ...
  *    }}
- * ]}
+ * }
+ *
+ * {b init}
+ * Create the internal state of the server.
+ * The initializer is not functionnal because the state of the server
+ * may be imperative.
+ *
+ * {b on_connection}
+ * Some initialization may be necessary once the server knows the client.
+ * This function is not in the [Multitub.C.interface] because of the asymetrie
+ * of the initialization protocol. When we create the client session, the server session
+ * is known.
+ *
+ * This is an extra initialization for the server. In case the server does not need it,
+ * simply does not change the state, as in :
+ * {[
+ *    on_connection(_, state) = state
+ * }
+ *
+ * {b on_message}
+ * Handle messages received from the client handler, or from some funaction in the page.
+ * Possibly, send back some messages to the client, in that case, you must
+ * use the function [Multitub.send_client] on the client channel.
+ *
 **/
 type Multitub.S.interface('state) = {{
 
-  /**
-   * Create the internal state of the server.
-   * The initializer is not functionnal because the state of the server
-   * may be imperative.
-  **/
   init : -> 'state
 
-  /**
-   * Some initialization may be necessary once the server knows the client.
-   * This function is not in the [Multitub.C.interface] because of the asymetrie
-   * of the initialization protocol. When we create the client session, the server session
-   * is known.
-   *
-   * This is an extra initialization for the server. In case the server does not need it,
-   * simply does not change the state, as in :
-   * {[
-   *    on_connection(_, state) = state
-   * ]}
-  **/
   on_connection : Multitub.C.channel, 'state -> 'state
 
-  /**
-   * Handle messages received from the client handler, or from some funaction in the page.
-   * Possibly, send back some messages to the client, in that case, you must
-   * use the function [Multitub.send_client] on the client channel.
-  **/
   on_message : Multitub.C.channel, 'state, Multitub.S.message -> Session.instruction('state)
 }}
 
@@ -224,7 +227,7 @@ type Multitub.S.interface('state) = {{
  * {[
  *   @server Multitub_S : Multitub.S.interface = ...
  *   @client Multitub_C : Multitub.C.interface = ...
- * ]}
+ * }
 **/
 
 /**
@@ -313,7 +316,7 @@ type Multitub.private.C.state('state) = {
   </>
 
 /**
- * The type Multitub.C.message should be 'abstract' (not possible with S3).
+ * The type Multitub.C.message should be 'abstract'
  * The server should use this function for sending
  * message to the client, and not directly the 'send' function.
 **/
@@ -321,7 +324,7 @@ type Multitub.private.C.state('state) = {
   send(channel, message)
 
 /**
- * The type Multitub.S.message should be 'abstract' (not possible with S3).
+ * The type Multitub.S.message should be 'abstract'
  * The client should use this function for sending
  * message to the server, and not directly the 'send' function.
 **/
@@ -331,8 +334,8 @@ type Multitub.private.C.state('state) = {
 /**
  * Creating a [one_page_server]. Use :
  * {[
- *    server = multitub("Name")
- * ]}
+ *    server = Multitub.one_page_server("Name")
+ * }
 **/
 @server one_page_server(title) = @toplevel.one_page_server(title, multitub_page)
 

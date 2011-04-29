@@ -81,7 +81,7 @@ type ColSet.t = int
 
   /**
    * Pick a random elt in the set.
-   * Returns { none } if the set is empty
+   * Returns [{none}] if the set is empty
   **/
   random(set : ColSet.t) : option(ColSet.elt) =
     rec aux(elt, set, size) =
