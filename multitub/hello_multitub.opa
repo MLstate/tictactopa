@@ -108,12 +108,12 @@ type C1.state = { num_a : int }
     match message with
     | { ~value } ->
       do jlog("Receive: message value, update the DOM")
-      do exec_actions([ #response <- <>The value of the server is : {value}</>])
+      do Dom.transform([ #response <- <>The value of the server is : {value}</>])
       {unchanged}
     | {funaction} ->
       do jlog("Receive: message funaction, update the DOM, and send")
       num_a = state.num_a + 1
-      do exec_actions([ #messageA_counter <- <>Number of A messages sent : {num_a}</>])
+      do Dom.transform([ #messageA_counter <- <>Number of A messages sent : {num_a}</>])
       do Multitub.send_server(s_channel, {a})
       {set = {~num_a}}
 

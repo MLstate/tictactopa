@@ -301,7 +301,7 @@ type Multitub.private.C.state('state) = {
 @client @private c_onload(s_channel, _) =
   c_channel = Session.make(c_init(s_channel), c_on_message)
   do send(s_channel, {set_c_channel = c_channel})
-  do exec_actions( [ #multitub <- Multitub_C.page(s_channel, c_channel) ] )
+  do Dom.transform( [ #multitub <- Multitub_C.page(s_channel, c_channel) ] )
   void
 
 @server @private multitub_page() =

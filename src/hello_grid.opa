@@ -62,7 +62,7 @@ token_html(i, j, color) =
 
 onclick_token(i, j) =
   do jlog("Your click : {i},{j}")
-  do exec( [ #status <- "Your click : {i}{j}" ])
+  do Dom.transform( [ #status <- "Your click : {i}{j}" ])
   color=(if mod(i+j, 2) == 0 then { yellow } else { red })
   token = Dom.select_id("token{i}{j}")
   do if Dom.has_class( token, "red") || Dom.has_class(token, "yellow")

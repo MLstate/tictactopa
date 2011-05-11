@@ -340,7 +340,7 @@ xhtml(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
    * Write in the User Interface the status
   **/
   set_status(status : string) =
-    do exec_actions([ #{status_id} <- status ])
+    do Dom.transform([ #{status_id} <- status ])
     void
 }}
 
