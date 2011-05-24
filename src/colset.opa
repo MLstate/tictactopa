@@ -31,23 +31,23 @@ type ColSet.t = int
   is_empty(set : ColSet.t) = set == empty
 
   mem(i : ColSet.elt, set : ColSet.t) : ColSet.elt =
-    Int.land(1, Int.lsr(set, i))
+    Bitwise.land(1, Bitwise.lsr(set, i))
 
   add(i : ColSet.elt, set : ColSet.t) : ColSet.t =
-    Int.lor(set, Int.lsl(1, i))
+    Bitwise.lor(set, Bitwise.lsl(1, i))
 
-  inter = Int.land : ColSet.t, ColSet.t -> ColSet.t
-  union = Int.lor : ColSet.t, ColSet.t -> ColSet.t
+  inter = Bitwise.land : ColSet.t, ColSet.t -> ColSet.t
+  union = Bitwise.lor : ColSet.t, ColSet.t -> ColSet.t
 
   fold(fold, set : ColSet.t, acc) =
     rec aux(elt, set, acc) =
       if set == 0 then acc
       else
         acc =
-          if Int.land(1, set) == 1
+          if Bitwise.land(1, set) == 1
           then fold(elt, acc)
           else acc
-        aux(succ(elt), Int.lsr(set, 1), acc)
+        aux(succ(elt), Bitwise.lsr(set, 1), acc)
    aux(0, set, acc)
 
   map(map, set : ColSet.t) : ColSet.t =
@@ -87,12 +87,12 @@ type ColSet.t = int
     rec aux(elt, set, size) =
       if set == 0 then none
       else
-        if Int.land(1, set) == 1
+        if Bitwise.land(1, set) == 1
         then
           r = Random.int(size)
           if r == 0 then some(elt)
-          else aux(succ(elt), Int.lsr(set, 1), pred(size))
-        else aux(succ(elt), Int.lsr(set, 1), size)
+          else aux(succ(elt), Bitwise.lsr(set, 1), pred(size))
+        else aux(succ(elt), Bitwise.lsr(set, 1), size)
     aux(0, set, size(set))
 
 }}
