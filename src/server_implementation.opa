@@ -99,10 +99,7 @@ type S.implementation.state = {
 /**
  * Randomize, at toplevel, done once.
 **/
-// used to be: @server _ =
-// when the bug is fixed (ie the compiler doesn't give an error with
-// the previous line, it can be used)
-@server _hack =
+@server _ =
   do Random.random_init()
   void
 
