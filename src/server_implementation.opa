@@ -70,7 +70,7 @@ type S.implementation.state = {
     server_starts =
       GameContent.equal_player(server_player, GameParameters.first_player)
     game = Game.reset(state.game)
-    level = state.game.ia.level
+    level = state.ia.level
     if server_starts
     then (
       do Multitub.send_client(c_channel, { who_you_are = client_player ; ~level ; date = none })
