@@ -34,7 +34,7 @@ restart(_ : Multitub.S.channel, c_channel : Multitub.C.channel, _) =
 **/
 level(s_channel : Multitub.S.channel, _ : Multitub.C.channel, dom_level : dom, _) =
   value = Dom.get_value(dom_level)
-  level = int_of_string_unsafe(value)
+  level = int_of_string_unsafe(value) : IA.level
   do Multitub.send_server(s_channel, {ia_parameters = { ~level }})
   void
 

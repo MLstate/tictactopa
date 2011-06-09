@@ -342,6 +342,13 @@ xhtml(s_channel : Multitub.S.channel, c_channel : Multitub.C.channel) =
   set_status(status : string) =
     do Dom.transform([ #{status_id} <- status ])
     void
+
+  /**
+   * Set the ia level on the input (at initialization)
+  **/
+  set_level(level : IA.level) =
+    do Dom.set_value(#{level_id}, string_of_int(level))
+    void
 }}
 
 /**

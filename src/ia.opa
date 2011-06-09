@@ -15,9 +15,14 @@ import tictactopa.{colset,grid}
 **/
 
 /**
+ * The type representing the level of the IA
+**/
+type IA.level = int
+
+/**
  * Supported level of the IA.
 **/
-type IA.parameters = {level : int}
+type IA.parameters = {level : IA.level}
 
 /**
  * We use a 2 dimension Grid for seing if a location make a player win.
@@ -153,9 +158,9 @@ IA_Winning = {{
 
   Parameters = {{
 
-    max_level = 4
+    max_level = 4 : IA.level
 
-    default = { level = 0 } : IA.parameters
+    default = { level = max_level } : IA.parameters
 
     /**
      * Return a level in the bounds of the ia.

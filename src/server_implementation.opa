@@ -70,9 +70,10 @@ type S.implementation.state = {
     server_starts =
       GameContent.equal_player(server_player, GameParameters.first_player)
     game = Game.reset(state.game)
+    level = state.game.ia.level
     if server_starts
     then (
-      do Multitub.send_client(c_channel, { who_you_are = client_player ; date = none })
+      do Multitub.send_client(c_channel, { who_you_are = client_player ; ~level ; date = none })
       action = IA.compute(game)
       match GameUtils.free_line(game.grid, action) with
       | {none} -> @fail("IA returns an illicit action")
@@ -85,7 +86,7 @@ type S.implementation.state = {
     )
     else (
       date = generate_date()
-      do Multitub.send_client(c_channel, { who_you_are = client_player ; date = some(date) })
+      do Multitub.send_client(c_channel, { who_you_are = client_player ; ~level ; date = some(date) })
       { state with ~date ; ~game ; player = server_player }
     )
 

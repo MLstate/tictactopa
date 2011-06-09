@@ -110,7 +110,7 @@ type Multitub.C.message =
     * If the server should start, the date is not given, so that every action
     * sent to the server before it has had the time to play would be ignored.
    **/
- / { who_you_are : Game.player ; date : option(Multitub.message.date) }
+ / { who_you_are : Game.player ; level : IA.level ; date : option(Multitub.message.date) }
 
    /**
     * The server wants to notify the client that the game is over.

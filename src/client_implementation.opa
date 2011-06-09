@@ -34,6 +34,11 @@ type C.implementation.state = {
   **/
   client_num : int
   server_num : int
+
+  /**
+   * A flag indicating if the game is over
+  **/
+  game_over : bool
 }
 
 /**
@@ -77,7 +82,8 @@ type C.implementation.state = {
     server_num = 0
     date = 0
     player = {Y}
-    state = ~{ client_num server_num date player }
+    game_over = false
+    state = ~{ client_num server_num date player game_over }
     state : C.implementation.state
 
   /**
@@ -91,28 +97,30 @@ type C.implementation.state = {
       do ClientLayout.jlog(message)
       {unchanged}
 
-    | { who_you_are = player ; ~date } ->
+    | { who_you_are = player ; ~level ; ~date } ->
+      do ClientLayout.set_level(level)
       do ClientLayout.set_player(player)
       do ClientGrid.clear()
       client_num = 0
       server_num = 0
       date = date ? state.date
-      state = ~{ state with client_num server_num player date }
+      game_over = false
+      state = ~{ state with client_num server_num player date game_over }
       do ClientUtils.status(state)
       {set = state}
 
     | { ~winner } ->
       match winner with
       | {none} ->
-        do ClientLayout.set_status("EXAECO !")
-        {unchanged}
+        do ClientLayout.set_status("EXAEQUO !")
+        { set = { state with game_over=true} }
       | { some = player } ->
         do if GameContent.equal_player(player, state.player)
         then
           ClientLayout.set_status("YOU WIN :)")
         else
           ClientLayout.set_status("YOU LOOSE :(")
-        {unchanged}
+        { set = { state with game_over=true} }
       end
     | ~{ player location date } ->
         state =
@@ -132,7 +140,7 @@ type C.implementation.state = {
     | { ~funaction } ->
       match funaction with
       | { click = location } ->
-        if not(ClientUtils.my_turn(state))
+        if not(ClientUtils.my_turn(state)) || state.game_over
         then {unchanged}
         else
           date = state.date
