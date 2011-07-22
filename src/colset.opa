@@ -53,6 +53,10 @@ type ColSet.t = int
         aux(succ(elt), Bitwise.lsr(set, 1), acc)
    aux(0, set, acc)
 
+  filter(filter, set) =
+    f(elt, set) = if filter(elt) then add(elt, set) else set
+    fold(f, set, empty)
+
   /**
    * Return [{some(elt)}] if [elt] is the only elt of the set
   **/

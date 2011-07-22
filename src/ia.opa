@@ -220,6 +220,29 @@ IA_Forced = {{
         end
       end
     ColSet.find(find, actions)
+
+  /**
+   * Given a grid and an action, remove the actions leading to let the other to make a force strategy
+  **/
+  non_force_strategy(grid : Game.grid, win : IA.winning_grid, actions : ColSet.t, p : Game.player) =
+    all_actions = GameRules.actions(grid)
+    p2 = GameContent.neg_player(p)
+    filter(column) =
+      match GameUtils.free_line(grid, column) with
+      | { none } -> false
+      | { some = line } ->
+        grid = Grid.setij(grid, column, line, p <: Game.content)
+        match force_strategy(grid, win, all_actions, p2) with
+        | { some = force } ->
+          do jlog("non_force: removing {column} because other may force in {force}")
+          _ = Grid.setij(grid, column, line, {free})
+          false
+        | { none } ->
+          _ = Grid.setij(grid, column, line, {free})
+          true
+        end
+      end
+    ColSet.filter(filter, actions)
 }}
 
 
@@ -352,6 +375,14 @@ IA_Forced = {{
       do jlog("forced strategy : {choice}")
       choice
     | _ ->
+
+    choices =
+      if level < 3 then choices else
+        non_force = IA_Forced.non_force_strategy(grid, win, choices, player)
+        do log("non_force", non_force)
+        choices = ColSet.specialize(choices, non_force)
+        do log("choices", choices)
+        choices
 
     choose(choices)
 
