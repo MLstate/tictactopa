@@ -50,6 +50,16 @@ type ColSet.t = int
         aux(succ(elt), Bitwise.lsr(set, 1), acc)
    aux(0, set, acc)
 
+  find(cond, set : ColSet.t) =
+    rec aux(elt, set) =
+      if set == 0 then {none}
+      else
+        if (Bitwise.land(1, set) == 1) && cond(elt)
+        then some(elt)
+        else
+          aux(succ(elt), Bitwise.lsr(set, 1))
+   aux(0, set)
+
   map(map, set : ColSet.t) : ColSet.t =
     aux(elt, set) = add(map(elt), set)
     fold(aux, set, empty)

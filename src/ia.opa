@@ -107,20 +107,17 @@ IA_Winning = {{
   **/
 
   /**
-   * Return the set of action leading to the subite victory for the player [p]
+   * Return a possible action leading to the subite victory for the player [p]
    * given a start set of possible actions.
   **/
   victory(grid : Game.grid, win : IA.winning_grid, actions : ColSet.t, p : Game.player) =
-    fold(column, acc) =
+    find(column) =
       match GameUtils.free_line(grid, column) with
       | { some = line } ->
         w = Grid.getij(win, column, line)
-        if read(w, p)
-        then ColSet.add(column, acc)
-        else acc
-      | _ -> acc
-    actions = ColSet.fold(fold, actions, ColSet.empty)
-    actions
+        read(w, p)
+      | _ -> false
+    ColSet.find(find, actions)
 
   /**
    * In a set of actions, remove the one making so that the player [p] can play up and win.
@@ -242,15 +239,19 @@ IA_Winning = {{
 
     // Victory
     victory = IA_Winning.victory(grid, win, choices, player)
-    do log("victory", victory)
-    choices = ColSet.specialize(choices, victory)
-    do log("choices", choices)
+    match victory with
+    | {some = choice} ->
+      do jlog("victory : {choice}")
+      choice
+    | _ ->
 
     // Blocking victory
     block_victory = IA_Winning.victory(grid, win, choices, other_player)
-    do log("block_victory", block_victory)
-    choices = ColSet.specialize(choices, block_victory)
-    do log("choices", choices)
+    match block_victory with
+    | {some=choice} ->
+      do jlog("blocking : {choice}")
+      choice
+    | _ ->
 
     // Anti-victory
     anti_victory = IA_Winning.anti_victory(grid, win, choices, other_player)
