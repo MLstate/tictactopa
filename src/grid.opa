@@ -90,6 +90,19 @@ type Grid.t('content) = {
     for_i(i) =
       for(min2, max2, (j -> iter(i, j)))
     for(min, max, for_i)
+
+  /**
+   * Same than [for] for with an accumulator
+  **/
+  fold(min, max, fold : int, 'acc -> 'acc, acc) =
+    rec aux(i, acc) =
+      if i > max then acc else acc = fold(i, acc) ; aux(succ(i), acc)
+    aux(min, acc)
+
+  fold2((min, max), (min2, max2), f : int, int, 'acc -> 'acc, acc) =
+    fold_i(i, acc) =
+      fold(min2, max2, (j, acc -> f(i, j, acc)), acc)
+    fold(min, max, fold_i, acc)
 }}
 
 /**
@@ -234,4 +247,9 @@ type Grid.t('content) = {
      lines = dimensions.lines
      Loop.for2((0, pred(columns)), (0, pred(lines)), iter)
 
+   foldij(grid : Grid.t, fold, acc : 'acc) =
+     dimensions = grid.dimensions
+     columns = dimensions.columns
+     lines = dimensions.lines
+     Loop.fold2((0, pred(columns)), (0, pred(lines)), fold, acc)
 }}

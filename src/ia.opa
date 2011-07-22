@@ -103,6 +103,25 @@ IA_Winning = {{
     win
 
   /**
+   * Given a winning_grid, count how much location are winning, with at least one
+   * empty location lower. We count if there are on an (even, odd) position.
+  **/
+  compute_hint(grid, win : IA.winning_grid, player : Game.player) : (int, int) =
+    fold(i, j, (even, odd) as acc) =
+      if j == 0 then acc else
+      wloc = Grid.getij(win, i, j)
+      if read(wloc, player) then
+        // at least one empty lower
+        if Grid.getij(grid, i, j-1) == { free }
+        then
+          if mod(j, 2) == 0
+          then (succ(even), odd)
+          else (even, succ(odd))
+        else acc
+      else acc
+    Grid.foldij(grid, fold, (0, 0))
+
+  /**
    * Once the winning grid is computed, we can have a few interresting informations.
   **/
 
