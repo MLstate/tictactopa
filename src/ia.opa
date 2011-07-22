@@ -142,6 +142,83 @@ IA_Winning = {{
     actions
 }}
 
+
+/**
+ * Forced strategy
+**/
+
+IA_Forced = {{
+
+  /**
+   * Given a set of actions, find a possible action leading to a force strategy.
+   * The winning_grid given in argument is modified and corrupted by this function.
+  **/
+  rec force_strategy(grid : Game.grid, win : IA.winning_grid, actions : ColSet.t, p : Game.player) =
+    p2 = GameContent.neg_player(p)
+    find(column) =
+      // we play in that column, and see if it leads to a force strategy
+      match GameUtils.free_line(grid, column) with
+      | { none } -> false
+      | { some = line } ->
+        do jlog("force: trying to play {column}, {line}")
+        grid = Grid.setij(grid, column, line, p <: Game.content)
+        win = IA_Winning.compute(grid, win)
+        forced =
+          match IA_Winning.victory(grid, win, actions, p) with
+          | { some = _ } as some -> some
+          | { none } ->
+            // a forced may be if anti_victory is a singleton
+            anti = IA_Winning.anti_victory(grid, win, actions, p2)
+            ColSet.is_singleton(anti)
+        match forced with
+        | {none} ->
+          do jlog("force: this does not force the other to play anything, rolling back {column}, {line}")
+          _ = Grid.setij(grid, column, line, {free})
+          false
+        | { some = forced } ->
+          match GameUtils.free_line(grid, forced) with
+          | {none} ->
+            do jlog("force: internal error")
+            _ = Grid.setij(grid, column, line, {free})
+            false
+          | {some = forced_line} ->
+            do jlog("force: this force the other to play {forced}, {forced_line}")
+            grid = Grid.setij(grid, forced, forced_line, p2 <: Game.content)
+            win = IA_Winning.compute(grid, win)
+            match IA_Winning.victory(grid, win, actions, p) with
+            | { some = victory } ->
+              do jlog("force: and after that, I will have victory in {victory}")
+              _ = Grid.setij(grid, column, line, {free})
+              _ = Grid.setij(grid, forced, forced_line, {free})
+              true
+            | { none } ->
+              // recursive call
+              // the force strategy should be computed in non victory choices
+              // or in a force place
+              actions =
+                match IA_Winning.victory(grid, win, actions, p2) with
+                | { some = p2_force } ->
+                  ColSet.singleton(p2_force)
+                | { none } ->
+                  IA_Winning.anti_victory(grid, win, actions, p)
+              if Option.is_some(force_strategy(grid, win, actions, p))
+              then
+                do jlog("force: and after that, I have noticed recursively that I find a strategy.")
+                _ = Grid.setij(grid, column, line, {free})
+                _ = Grid.setij(grid, forced, forced_line, {free})
+                true
+              else
+                do jlog("force: this does not give me a deeper strategy, rolling back {column}, {line} and rolling back {forced}, {forced_line}")
+                _ = Grid.setij(grid, column, line, {free})
+                _ = Grid.setij(grid, forced, forced_line, {free})
+                false
+          end
+        end
+      end
+    ColSet.find(find, actions)
+}}
+
+
 /**
  * {1 Main IA module}
 **/
@@ -173,7 +250,6 @@ IA_Winning = {{
           { level = max_level }
         else
           level
-
   }}
 
   /**
@@ -262,6 +338,16 @@ IA_Winning = {{
     // This is enough for level 1
     if level <= 1 then choose(choices) else
 
+    // If level is at least 3, we check for forced strategy
+    forced =
+      if level >= 3 then IA_Forced.force_strategy(grid, win, choices, player)
+      else none
+
+    match forced with
+    | { some = choice } ->
+      do jlog("forced strategy : {choice}")
+      choice
+    | _ ->
 
     choose(choices)
 

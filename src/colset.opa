@@ -33,6 +33,9 @@ type ColSet.t = int
   mem(i : ColSet.elt, set : ColSet.t) : ColSet.elt =
     Bitwise.land(1, Bitwise.lsr(set, i))
 
+  singleton(i : ColSet.elt) : ColSet.t =
+    Bitwise.lsl(1, i)
+
   add(i : ColSet.elt, set : ColSet.t) : ColSet.t =
     Bitwise.lor(set, Bitwise.lsl(1, i))
 
@@ -49,6 +52,23 @@ type ColSet.t = int
           else acc
         aux(succ(elt), Bitwise.lsr(set, 1), acc)
    aux(0, set, acc)
+
+  /**
+   * Return [{some(elt)}] if [elt] is the only elt of the set
+  **/
+  is_singleton(set : ColSet.t) =
+    rec aux(elt, set, acc) =
+      if set == 0 then acc
+      else
+        if Bitwise.land(1, set) == 1
+        then
+          match acc with
+          | { some = _ } -> none
+          | { none } ->
+            aux(succ(elt), Bitwise.lsr(set, 1), some(elt))
+        else
+          aux(succ(elt), Bitwise.lsr(set, 1), acc)
+    aux(0, set, none)
 
   find(cond, set : ColSet.t) =
     rec aux(elt, set) =
