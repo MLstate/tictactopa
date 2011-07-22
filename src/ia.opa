@@ -165,10 +165,13 @@ IA_Forced = {{
         win = IA_Winning.compute(grid, win)
         forced =
           match IA_Winning.victory(grid, win, actions, p) with
-          | { some = _ } as some -> some
+          | { some = block } as some ->
+            do jlog("force: this force the other to block me in {block}")
+            some
           | { none } ->
             // a forced may be if anti_victory is a singleton
-            anti = IA_Winning.anti_victory(grid, win, actions, p2)
+            p2_actions = GameRules.actions(grid)
+            anti = IA_Winning.anti_victory(grid, win, p2_actions, p2)
             ColSet.is_singleton(anti)
         match forced with
         | {none} ->
@@ -196,6 +199,7 @@ IA_Forced = {{
               // the force strategy should be computed in non victory choices
               // or in a force place
               actions =
+                actions = GameRules.actions(grid)
                 match IA_Winning.victory(grid, win, actions, p2) with
                 | { some = p2_force } ->
                   ColSet.singleton(p2_force)
