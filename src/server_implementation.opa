@@ -53,7 +53,7 @@ type S.implementation.state = {
    * everywhere in the grid.
   **/
   generate_date(): Multitub.message.date =
-    date = Random.int(max_int)
+    date = Random.int(Limits.max_int)
     date
 
   /**

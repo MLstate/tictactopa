@@ -4,6 +4,7 @@
 .PHONY: doc
 
 OPA=opa
+OPAOPT=--parser classic
 OPADOC=opadoc
 
 tictactopa=tictactopa.opack
